@@ -40,11 +40,6 @@ export class Tracker {
 
   private async sendSessionReplayBatch(batch: SessionReplayBatch): Promise<void> {
     try {
-      // Include API key if configured
-      if (this.config.apiKey) {
-        batch.apiKey = this.config.apiKey;
-      }
-
       await fetch(`${this.config.analyticsHost}/session-replay/record/${this.config.siteId}`, {
         method: "POST",
         headers: {
@@ -94,11 +89,6 @@ export class Tracker {
 
     if (this.customUserId) {
       payload.user_id = this.customUserId;
-    }
-
-    // Include API key if configured
-    if (this.config.apiKey) {
-      payload.api_key = this.config.apiKey;
     }
 
     return payload;

@@ -58,7 +58,7 @@ export function ReplayCard({ replay }: { replay: SessionReplayListItem }) {
     >
       <div className="flex items-center gap-2 mb-1">
         {/* <div className="text-xs text-neutral-500">
-          {replay.user_id.slice(0, 10)}...
+          {replay.user_id.slice(0, 12)}...
         </div> */}
         <div className="text-xs  text-neutral-400">{startTime.toRelative()}</div>
         {duration && (

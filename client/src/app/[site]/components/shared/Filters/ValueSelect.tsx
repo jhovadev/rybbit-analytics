@@ -13,8 +13,8 @@ export function ValueSelect({
   onChange,
 }: {
   parameter: FilterParameter;
-  value: string[];
-  onChange: (values: string[]) => void;
+  value: (string | number)[];
+  onChange: (values: (string | number)[]) => void;
 }) {
   const { data, isFetching } = useSingleCol({
     parameter,
@@ -24,15 +24,15 @@ export function ValueSelect({
 
   const { getRegionName } = useGetRegionName();
 
-  const getValueLabel = (val: string) => {
+  const getValueLabel = (val: string | number) => {
     if (parameter === "country") {
-      return getCountryName(val);
+      return getCountryName(val as string);
     }
     if (parameter === "region") {
-      return getRegionName(val);
+      return getRegionName(val as string);
     }
     if (parameter === "language") {
-      return getLanguageName(val);
+      return getLanguageName(val as string);
     }
     return val;
   };

@@ -318,19 +318,21 @@ export function Chart({
         const previousTime = slice.points[0].data.previousTime as DateTime;
 
         const diff = currentY - previousY;
-        const diffPercentage = previousY ? (diff / previousY) * 100 : 9999;
+        const diffPercentage = previousY ? (diff / previousY) * 100 : null;
 
         return (
           <div className="text-sm bg-neutral-850 p-2 rounded-md border border-neutral-750">
-            <div
-              className="text-lg font-medium"
-              style={{
-                color: diffPercentage > 0 ? "hsl(var(--green-400))" : "hsl(var(--red-400))",
-              }}
-            >
-              {diffPercentage > 0 ? "+" : ""}
-              {diffPercentage.toFixed(2)}%
-            </div>
+            {diffPercentage !== null && (
+              <div
+                className="text-lg font-medium"
+                style={{
+                  color: diffPercentage > 0 ? "hsl(var(--green-400))" : "hsl(var(--red-400))",
+                }}
+              >
+                {diffPercentage > 0 ? "+" : ""}
+                {diffPercentage.toFixed(2)}%
+              </div>
+            )}
 
             <div className="flex justify-between text-sm w-40">
               <div>{formatChartDateTime(currentTime, bucket)}</div>

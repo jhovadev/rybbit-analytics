@@ -1,10 +1,9 @@
-import { FastifyRequest } from "fastify";
-import { FastifyReply } from "fastify";
-import { clickhouse } from "../../../db/clickhouse/clickhouse.js";
-import { getTimeStatement, processResults, getFilterStatement, patternToRegex } from "../utils.js";
-import { getUserHasAccessToSitePublic } from "../../../lib/auth-utils.js";
+import { FilterParams } from "@rybbit/shared";
+import { FastifyReply, FastifyRequest } from "fastify";
 import SqlString from "sqlstring";
-import { Filter } from "../types.js";
+import { clickhouse } from "../../../db/clickhouse/clickhouse.js";
+import { getUserHasAccessToSitePublic } from "../../../lib/auth-utils.js";
+import { getFilterStatement, getTimeStatement, patternToRegex, processResults } from "../utils.js";
 
 type FunnelStep = {
   value: string;
@@ -16,10 +15,6 @@ type FunnelStep = {
 
 type Funnel = {
   steps: FunnelStep[];
-  startDate: string;
-  endDate: string;
-  timeZone: string;
-  filters?: Filter[];
 };
 
 type FunnelResponse = {
@@ -36,10 +31,11 @@ export async function getFunnel(
     Params: {
       site: string;
     };
+    Querystring: FilterParams<{}>;
   }>,
   reply: FastifyReply
 ) {
-  const { steps, startDate, endDate, timeZone, filters } = request.body;
+  const { steps } = request.body;
   const { site } = request.params;
 
   // Validate request
@@ -47,23 +43,15 @@ export async function getFunnel(
     return reply.status(400).send({ error: "At least 2 steps are required for a funnel" });
   }
 
-  // Check user access to site
   const userHasAccessToSite = await getUserHasAccessToSitePublic(request, site);
   if (!userHasAccessToSite) {
     return reply.status(403).send({ error: "Forbidden" });
   }
 
-  // Build funnel query
   try {
-    // Create the time statement for the date range
-    const timeStatement = getTimeStatement({
-      startDate,
-      endDate,
-      timeZone,
-    });
+    const filterStatement = getFilterStatement(request.query.filters);
 
-    // Get filter conditions using the existing utility function
-    const filterConditions = filters && filters.length > 0 ? getFilterStatement(JSON.stringify(filters)) : "";
+    const timeStatement = getTimeStatement(request.query);
 
     // Build conditional statements for each step
     const stepConditions = steps.map(step => {
@@ -113,7 +101,7 @@ export async function getFunnel(
       WHERE
         site_id = {siteId:Int32}
         ${timeStatement}
-        ${filterConditions}
+        ${filterStatement}
         AND user_id != ''
     ),
     -- Initial step (all users who completed step 1)

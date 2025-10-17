@@ -1,3 +1,5 @@
+# DON'T USE THIS FILE, USE docker-compose.yml instead
+
 services:
   caddy:
     image: caddy:2.10.0
@@ -114,6 +116,7 @@ services:
       # Axiom logging configuration (optional)
       - AXIOM_DATASET=${AXIOM_DATASET}
       - AXIOM_TOKEN=${AXIOM_TOKEN}
+      - MAPBOX_TOKEN=${MAPBOX_TOKEN}
     depends_on:
       clickhouse:
         condition: service_healthy
@@ -134,11 +137,13 @@ services:
         NEXT_PUBLIC_BACKEND_URL: ${BASE_URL}
         NEXT_PUBLIC_DISABLE_SIGNUP: ${DISABLE_SIGNUP}
         NEXT_PUBLIC_CLOUD: ${CLOUD}
+        NEXT_PUBLIC_MAPBOX_TOKEN: ${MAPBOX_TOKEN}
     environment:
       - NODE_ENV=production
       - NEXT_PUBLIC_BACKEND_URL=${BASE_URL}
       - NEXT_PUBLIC_DISABLE_SIGNUP=${DISABLE_SIGNUP}
       - NEXT_PUBLIC_CLOUD=${CLOUD}
+      - NEXT_PUBLIC_MAPBOX_TOKEN=${MAPBOX_TOKEN}
     depends_on:
       - backend
     restart: unless-stopped

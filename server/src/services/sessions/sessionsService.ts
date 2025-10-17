@@ -13,15 +13,19 @@ class SessionsService {
   }
 
   private initializeCleanupCron() {
-    this.cleanupTask = cron.schedule("* * * * *", async () => {
-      try {
-        const deletedCount = await this.cleanupOldSessions();
-        // Uncomment for debugging
-        this.logger.debug(`Cleaned up ${deletedCount} expired sessions`);
-      } catch (error) {
-        this.logger.error(error as Error, "Error during session cleanup");
-      }
-    });
+    this.cleanupTask = cron.schedule(
+      "* * * * *",
+      async () => {
+        try {
+          const deletedCount = await this.cleanupOldSessions();
+          // Uncomment for debugging
+          this.logger.debug(`Cleaned up ${deletedCount} expired sessions`);
+        } catch (error) {
+          this.logger.error(error as Error, "Error during session cleanup");
+        }
+      },
+      { timezone: "UTC" }
+    );
 
     this.logger.info("Session cleanup cron initialized (runs every minute)");
   }

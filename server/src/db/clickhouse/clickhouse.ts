@@ -36,7 +36,9 @@ export const initializeClickhouse = async () => {
         screen_width UInt16,
         screen_height UInt16,
         device_type LowCardinality(String),
+        -- either 'pageview', 'custom_event', 'performance', 'outbound_link', 'error'
         type LowCardinality(String) DEFAULT 'pageview',
+        -- only for custom_event
         event_name String,
         props JSON
       )
@@ -46,7 +48,7 @@ export const initializeClickhouse = async () => {
       `,
   });
 
-  // Add performance metric columns if they don't exist
+  // Add columns to the events table
   await clickhouse.exec({
     query: `
       ALTER TABLE events
@@ -55,6 +57,7 @@ export const initializeClickhouse = async () => {
         ADD COLUMN IF NOT EXISTS inp Nullable(Float64),
         ADD COLUMN IF NOT EXISTS fcp Nullable(Float64),
         ADD COLUMN IF NOT EXISTS ttfb Nullable(Float64),
+        ADD COLUMN IF NOT EXISTS ip Nullable(String),
         ADD COLUMN IF NOT EXISTS import_id Nullable(String)
     `,
   });

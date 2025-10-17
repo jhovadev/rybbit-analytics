@@ -1,11 +1,11 @@
 import { eq } from "drizzle-orm";
 import { db } from "../db/postgres/postgres.js";
 import { sites } from "../db/postgres/schema.js";
-import { logger } from "./logger/logger.js";
 import { matchesCIDR, matchesRange } from "./ipUtils.js";
+import { logger } from "./logger/logger.js";
 
 // Site configuration interface
-interface SiteConfigData {
+export interface SiteConfigData {
   id: string | null;
   siteId: number;
   public: boolean;
@@ -14,9 +14,20 @@ interface SiteConfigData {
   blockBots: boolean;
   excludedIPs: string[];
   apiKey?: string | null;
+  sessionReplay: boolean;
+  webVitals: boolean;
+  trackErrors: boolean;
+  trackOutbound: boolean;
+  trackUrlParams: boolean;
+  trackInitialPageView: boolean;
+  trackSpaNavigation: boolean;
+  trackIp: boolean;
 }
 
 class SiteConfig {
+  private cache = new Map<string, { data: SiteConfigData; expires: number }>();
+  private cacheTTL = 60 * 1000; // 1 minute TTL
+
   /**
    * Helper to determine if the input is a numeric siteId or string id
    */
@@ -28,10 +39,17 @@ class SiteConfig {
    * Get site by either siteId or id
    */
   private async getSiteByAnyId(siteIdOrId: string | number): Promise<SiteConfigData | undefined> {
+    const cacheKey = String(siteIdOrId);
+    const cached = this.cache.get(cacheKey);
+
+    if (cached && cached.expires > Date.now()) {
+      return cached.data;
+    }
+
     try {
       const isNumeric = this.isNumericId(siteIdOrId);
 
-      const site = await db
+      const [site] = await db
         .select({
           id: sites.id,
           siteId: sites.siteId,
@@ -41,25 +59,48 @@ class SiteConfig {
           blockBots: sites.blockBots,
           excludedIPs: sites.excludedIPs,
           apiKey: sites.apiKey,
+          sessionReplay: sites.sessionReplay,
+          webVitals: sites.webVitals,
+          trackErrors: sites.trackErrors,
+          trackOutbound: sites.trackOutbound,
+          trackUrlParams: sites.trackUrlParams,
+          trackInitialPageView: sites.trackInitialPageView,
+          trackSpaNavigation: sites.trackSpaNavigation,
+          trackIp: sites.trackIp,
         })
         .from(sites)
         .where(isNumeric ? eq(sites.siteId, Number(siteIdOrId)) : eq(sites.id, String(siteIdOrId)))
         .limit(1);
 
-      if (!site[0]) {
+      if (!site) {
         return undefined;
       }
 
-      return {
-        id: site[0].id,
-        siteId: site[0].siteId,
-        public: site[0].public || false,
-        saltUserIds: site[0].saltUserIds || false,
-        domain: site[0].domain || "",
-        blockBots: site[0].blockBots === undefined ? true : site[0].blockBots,
-        excludedIPs: Array.isArray(site[0].excludedIPs) ? site[0].excludedIPs : [],
-        apiKey: site[0].apiKey,
+      const configData: SiteConfigData = {
+        id: site.id,
+        siteId: site.siteId,
+        public: site.public || false,
+        saltUserIds: site.saltUserIds || false,
+        domain: site.domain || "",
+        blockBots: site.blockBots === undefined ? true : site.blockBots,
+        excludedIPs: Array.isArray(site.excludedIPs) ? site.excludedIPs : [],
+        apiKey: site.apiKey,
+        sessionReplay: site.sessionReplay || false,
+        webVitals: site.webVitals || false,
+        trackErrors: site.trackErrors || false,
+        trackOutbound: site.trackOutbound || true,
+        trackUrlParams: site.trackUrlParams || true,
+        trackInitialPageView: site.trackInitialPageView || true,
+        trackSpaNavigation: site.trackSpaNavigation || true,
+        trackIp: site.trackIp || false,
       };
+
+      this.cache.set(cacheKey, {
+        data: configData,
+        expires: Date.now() + this.cacheTTL,
+      });
+
+      return configData;
     } catch (error) {
       logger.error(error as Error, `Error fetching site configuration for ${siteIdOrId}`);
       return undefined;
@@ -67,152 +108,25 @@ class SiteConfig {
   }
 
   /**
-   * Check if a site is public
-   */
-  async isSitePublic(siteIdOrId?: string | number): Promise<boolean> {
-    if (!siteIdOrId) return false;
-    const config = await this.getSiteByAnyId(siteIdOrId);
-    return config?.public || false;
-  }
-
-  /**
-   * Check if a site has user ID salting enabled
-   */
-  async shouldSaltUserIds(siteIdOrId?: string | number): Promise<boolean> {
-    if (!siteIdOrId) return false;
-    const config = await this.getSiteByAnyId(siteIdOrId);
-    return config?.saltUserIds || false;
-  }
-
-  /**
-   * Check if a site has bot blocking enabled
-   */
-  async shouldBlockBots(siteIdOrId?: string | number): Promise<boolean> {
-    if (!siteIdOrId) return true; // Default to blocking bots if no site specified
-    const config = await this.getSiteByAnyId(siteIdOrId);
-    // Default to true if configuration is not found (safeguard)
-    return config?.blockBots !== false;
-  }
-
-  /**
-   * Get the domain of a site
-   */
-  async getSiteDomain(siteIdOrId?: string | number): Promise<string> {
-    if (!siteIdOrId) return "";
-    const config = await this.getSiteByAnyId(siteIdOrId);
-    return config?.domain || "";
-  }
-
-  /**
    * Get the full site configuration
    */
-  async getSiteConfig(siteIdOrId?: string | number): Promise<SiteConfigData | undefined> {
+  async getConfig(siteIdOrId?: string | number): Promise<SiteConfigData | undefined> {
     if (!siteIdOrId) return undefined;
     return this.getSiteByAnyId(siteIdOrId);
   }
 
-  /**
-   * Update the public status of a site
-   */
-  async updateSitePublicStatus(siteIdOrId: number | string, isPublic: boolean): Promise<void> {
+  async updateConfig(siteIdOrId: number | string, config: Partial<SiteConfigData>): Promise<void> {
     try {
       const isNumeric = this.isNumericId(siteIdOrId);
-
       await db
         .update(sites)
-        .set({ public: isPublic })
+        .set(config)
         .where(isNumeric ? eq(sites.siteId, Number(siteIdOrId)) : eq(sites.id, String(siteIdOrId)));
+
+      // Invalidate cache after update
+      this.cache.delete(String(siteIdOrId));
     } catch (error) {
-      logger.error(error as Error, `Error updating public status for site ${siteIdOrId}`);
-    }
-  }
-
-  /**
-   * Update the salt user IDs setting of a site
-   */
-  async updateSiteSaltSetting(siteIdOrId: number | string, saltUserIds: boolean): Promise<void> {
-    try {
-      const isNumeric = this.isNumericId(siteIdOrId);
-
-      await db
-        .update(sites)
-        .set({ saltUserIds })
-        .where(isNumeric ? eq(sites.siteId, Number(siteIdOrId)) : eq(sites.id, String(siteIdOrId)));
-    } catch (error) {
-      logger.error(error as Error, `Error updating salt setting for site ${siteIdOrId}`);
-    }
-  }
-
-  /**
-   * Update the bot blocking setting of a site
-   */
-  async updateSiteBlockBotsSetting(siteIdOrId: number | string, blockBots: boolean): Promise<void> {
-    try {
-      const isNumeric = this.isNumericId(siteIdOrId);
-
-      await db
-        .update(sites)
-        .set({ blockBots })
-        .where(isNumeric ? eq(sites.siteId, Number(siteIdOrId)) : eq(sites.id, String(siteIdOrId)));
-    } catch (error) {
-      logger.error(error as Error, `Error updating block bots setting for site ${siteIdOrId}`);
-    }
-  }
-
-  /**
-   * Update the domain of a site
-   */
-  async updateSiteDomain(siteIdOrId: number | string, domain: string): Promise<void> {
-    try {
-      const isNumeric = this.isNumericId(siteIdOrId);
-
-      await db
-        .update(sites)
-        .set({ domain })
-        .where(isNumeric ? eq(sites.siteId, Number(siteIdOrId)) : eq(sites.id, String(siteIdOrId)));
-    } catch (error) {
-      logger.error(error as Error, `Error updating domain for site ${siteIdOrId}`);
-    }
-  }
-
-  /**
-   * Update the API key of a site
-   */
-  async updateSiteApiKey(siteIdOrId: number | string, apiKey: string | null): Promise<void> {
-    try {
-      const isNumeric = this.isNumericId(siteIdOrId);
-
-      await db
-        .update(sites)
-        .set({ apiKey })
-        .where(isNumeric ? eq(sites.siteId, Number(siteIdOrId)) : eq(sites.id, String(siteIdOrId)));
-    } catch (error) {
-      logger.error(error as Error, `Error updating API key for site ${siteIdOrId}`);
-    }
-  }
-
-  /**
-   * Get excluded IPs for a site
-   */
-  async getExcludedIPs(siteIdOrId?: string | number): Promise<string[]> {
-    if (!siteIdOrId) return [];
-    const config = await this.getSiteByAnyId(siteIdOrId);
-    return config?.excludedIPs || [];
-  }
-
-  /**
-   * Update the excluded IPs of a site
-   */
-  async updateSiteExcludedIPs(siteIdOrId: number | string, excludedIPs: string[]): Promise<void> {
-    try {
-      const isNumeric = this.isNumericId(siteIdOrId);
-
-      await db
-        .update(sites)
-        .set({ excludedIPs })
-        .where(isNumeric ? eq(sites.siteId, Number(siteIdOrId)) : eq(sites.id, String(siteIdOrId)));
-    } catch (error) {
-      logger.error(error as Error, `Error updating excluded IPs for site ${siteIdOrId}`);
+      logger.error(error as Error, `Error updating site configuration for ${siteIdOrId}`);
     }
   }
 
@@ -245,6 +159,9 @@ class SiteConfig {
       const isNumeric = this.isNumericId(siteIdOrId);
 
       await db.delete(sites).where(isNumeric ? eq(sites.siteId, Number(siteIdOrId)) : eq(sites.id, String(siteIdOrId)));
+
+      // Invalidate cache after deletion
+      this.cache.delete(String(siteIdOrId));
     } catch (error) {
       logger.error(error as Error, `Error removing site ${siteIdOrId}`);
     }
@@ -255,7 +172,8 @@ class SiteConfig {
    */
   async isIPExcluded(ipAddress: string, siteIdOrId?: string | number): Promise<boolean> {
     if (!siteIdOrId) return false; // If no site specified, don't exclude any IPs
-    const excludedIPs = await this.getExcludedIPs(siteIdOrId);
+    const config = await this.getSiteByAnyId(siteIdOrId);
+    const excludedIPs = config?.excludedIPs || [];
     if (!excludedIPs || excludedIPs.length === 0) {
       return false;
     }

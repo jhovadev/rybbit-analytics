@@ -48,8 +48,7 @@ type GetSingleColPaginatedResponse = {
 };
 
 const getQuery = (request: FastifyRequest<GetSingleColRequest>, isCountQuery: boolean = false) => {
-  const { startDate, endDate, timeZone, filters, parameter, limit, page, pastMinutesStart, pastMinutesEnd } =
-    request.query;
+  const { filters, parameter, limit, page } = request.query;
 
   const filterStatement = getFilterStatement(filters);
   const timeStatement = getTimeStatement(request.query);
@@ -117,7 +116,7 @@ const getQuery = (request: FastifyRequest<GetSingleColRequest>, isCountQuery: bo
           site_id = {siteId:Int32}
           AND page_title IS NOT NULL 
           AND page_title <> ''
-          AND type = 'pageview'
+          -- AND type = 'pageview'
           ${filterStatement}
           ${timeStatement}
       GROUP BY page_title
@@ -157,7 +156,7 @@ const getQuery = (request: FastifyRequest<GetSingleColRequest>, isCountQuery: bo
           FROM events
           WHERE
               site_id = {siteId:Int32}
-              AND type = 'pageview'
+              -- AND type = 'pageview'
               ${filterStatement}
               ${timeStatement}
       ),
@@ -230,7 +229,7 @@ const getQuery = (request: FastifyRequest<GetSingleColRequest>, isCountQuery: bo
           FROM events
           WHERE 
             site_id = {siteId:Int32}
-            AND type = 'pageview'
+            -- AND type = 'pageview'
             ${filterStatement}
             ${timeStatement}
       ),

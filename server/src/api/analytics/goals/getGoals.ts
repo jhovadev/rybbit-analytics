@@ -45,18 +45,7 @@ export async function getGoals(
   reply: FastifyReply
 ) {
   const { site } = request.params;
-  const {
-    startDate,
-    endDate,
-    timeZone,
-    filters,
-    page = "1",
-    pageSize = "10",
-    sort = "createdAt",
-    order = "desc",
-    pastMinutesStart,
-    pastMinutesEnd,
-  } = request.query;
+  const { filters, page = "1", pageSize = "10", sort = "createdAt", order = "desc" } = request.query;
 
   const pageNumber = parseInt(page, 10);
   const pageSizeNumber = parseInt(pageSize, 10);

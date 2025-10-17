@@ -56,26 +56,6 @@ export const getMetricUnit = (metric: PerformanceMetric, value: number): string 
 };
 
 /**
- * Get the chart color for a performance metric (used in charts)
- */
-const getMetricChartColor = (metric: PerformanceMetric): string => {
-  switch (metric) {
-    case "lcp":
-      return "#3b82f6"; // blue
-    case "cls":
-      return "#10b981"; // emerald
-    case "inp":
-      return "#f59e0b"; // amber
-    case "fcp":
-      return "#8b5cf6"; // violet
-    case "ttfb":
-      return "#ef4444"; // red
-    default:
-      return "#6b7280"; // gray
-  }
-};
-
-/**
  * Performance metric labels for display
  */
 export const METRIC_LABELS: Record<PerformanceMetric, string> = {

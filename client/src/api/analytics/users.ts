@@ -1,10 +1,10 @@
 import { Filter } from "@rybbit/shared";
 import { useQuery } from "@tanstack/react-query";
 import { timeZone } from "../../lib/dateTimeUtils";
-import { useStore, USER_PAGE_FILTERS, getFilteredFilters } from "../../lib/store";
-import { authedFetch, getStartAndEndDate } from "../utils";
+import { getFilteredFilters, useStore } from "../../lib/store";
+import { USER_PAGE_FILTERS } from "../../lib/filterGroups";
 import { APIResponse } from "../types";
-import { getQueryParams } from "../utils";
+import { authedFetch, getQueryParams } from "../utils";
 
 export type UsersResponse = {
   user_id: string;
@@ -15,6 +15,8 @@ export type UsersResponse = {
   browser: string;
   operating_system: string;
   device_type: string;
+  referrer: string;
+  channel: string;
   pageviews: number;
   events: number;
   sessions: number;

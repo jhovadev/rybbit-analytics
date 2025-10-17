@@ -7,7 +7,6 @@ export interface SavedFunnel {
   id: number;
   name: string;
   steps: FunnelStep[];
-  filters?: Filter[];
   createdAt: string;
   updatedAt: string;
   conversionRate: number | null;

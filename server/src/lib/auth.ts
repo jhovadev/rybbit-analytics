@@ -9,7 +9,7 @@ import { db } from "../db/postgres/postgres.js";
 import * as schema from "../db/postgres/schema.js";
 import { user } from "../db/postgres/schema.js";
 import { DISABLE_SIGNUP } from "./const.js";
-import { sendEmail, sendInvitationEmail } from "./resend.js";
+import { sendEmail, sendInvitationEmail } from "./email/email.js";
 
 dotenv.config();
 
@@ -110,6 +110,14 @@ export let auth: AuthType | null = betterAuth({
     },
   },
   user: {
+    additionalFields: {
+      sendAutoEmailReports: {
+        type: "boolean",
+        required: true,
+        defaultValue: true,
+        input: true,
+      },
+    },
     deleteUser: {
       enabled: true,
     },
@@ -184,28 +192,11 @@ export function initAuth(allowedOrigins: string[]) {
     },
     user: {
       additionalFields: {
-        monthlyEventCount: {
-          type: "number",
-          defaultValue: 0,
-          required: false,
-        },
-      },
-      deleteUser: {
-        enabled: true,
-        // Add a hook to run before deleting a user
-        // i dont think this works
-        beforeDelete: async user => {
-          // Delete all memberships for this user first
-          console.log(`Cleaning up memberships for user ${user.id} before deletion`);
-          try {
-            // Delete member records for this user
-            await db.delete(schema.member).where(eq(schema.member.userId, user.id));
-
-            console.log(`Successfully removed memberships for user ${user.id}`);
-          } catch (error) {
-            console.error(`Error removing memberships for user ${user.id}:`, error);
-            throw error; // Re-throw to prevent user deletion if cleanup fails
-          }
+        sendAutoEmailReports: {
+          type: "boolean",
+          required: true,
+          defaultValue: true,
+          input: true,
         },
       },
       changeEmail: {

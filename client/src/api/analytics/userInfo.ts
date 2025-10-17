@@ -19,6 +19,7 @@ export type UserInfo = {
   first_seen: string;
   pageviews: number;
   events: number;
+  ip?: string;
 };
 
 export function useUserInfo(siteId: number, userId: string) {

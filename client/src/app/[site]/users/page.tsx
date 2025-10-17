@@ -15,18 +15,20 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 import { useGetUsers, UsersResponse } from "../../../api/analytics/users";
-import { Button } from "../../../components/ui/button";
+import { Avatar, generateName } from "../../../components/Avatar";
+import { extractDomain, getChannelIcon, getDisplayName } from "../../../components/Channel";
+import { DisabledOverlay } from "../../../components/DisabledOverlay";
+import { Favicon } from "../../../components/Favicon";
 import { Pagination } from "../../../components/pagination";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../../../components/ui/tooltip";
+import { Button } from "../../../components/ui/button";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../../../components/ui/tooltip";
 import { useSetPageTitle } from "../../../hooks/useSetPageTitle";
-import { USER_PAGE_FILTERS } from "../../../lib/store";
+import { USER_PAGE_FILTERS } from "../../../lib/filterGroups";
 import { getCountryName } from "../../../lib/utils";
 import { Browser } from "../components/shared/icons/Browser";
 import { CountryFlag } from "../components/shared/icons/CountryFlag";
 import { OperatingSystem } from "../components/shared/icons/OperatingSystem";
 import { SubHeader } from "../components/SubHeader/SubHeader";
-import { DisabledOverlay } from "../../../components/DisabledOverlay";
-import { Avatar } from "../../../components/Avatar";
 
 // Set up column helper
 const columnHelper = createColumnHelper<UsersResponse>();
@@ -97,13 +99,11 @@ export default function UsersPage() {
   // Define table columns with consistent Title Case capitalization
   const columns = [
     columnHelper.accessor("user_id", {
-      header: "User ID",
+      header: "User",
       cell: info => (
-        <Link href={`/${site}/user/${info.getValue()}`}>
-          <div className=" truncate flex items-center gap-2 text-neutral-250 hover:text-neutral-100 hover:underline">
-            <Avatar size={20} name={info.getValue() as string} />
-            {info.getValue().slice(0, 6)}
-          </div>
+        <Link href={`/${site}/user/${info.getValue()}`} className="flex items-center gap-2 hover:underline">
+          <Avatar size={20} id={info.getValue() as string} />
+          <span className="max-w-24 truncate">{generateName(info.getValue())}</span>
         </Link>
       ),
     }),
@@ -121,6 +121,31 @@ export default function UsersPage() {
               </TooltipContent>
             </Tooltip>
             {info.row.original.city || info.row.original.region || getCountryName(info.getValue())}
+          </div>
+        );
+      },
+    }),
+    columnHelper.accessor("referrer", {
+      header: "Channel",
+      cell: info => {
+        const channel = info.row.original.channel;
+        const referrer = info.getValue();
+        const domain = extractDomain(referrer);
+
+        if (domain) {
+          const displayName = getDisplayName(domain);
+          return (
+            <div className="flex items-center gap-2">
+              <Favicon domain={domain} className="w-4 h-4" />
+              <span>{displayName}</span>
+            </div>
+          );
+        }
+
+        return (
+          <div className="flex items-center gap-2">
+            {getChannelIcon(channel)}
+            <span>{channel}</span>
           </div>
         );
       },
@@ -152,6 +177,7 @@ export default function UsersPage() {
             {deviceType === "Desktop" && <Monitor className="w-4 h-4" />}
             {deviceType === "Mobile" && <Smartphone className="w-4 h-4" />}
             {deviceType === "Tablet" && <Tablet className="w-4 h-4" />}
+            {deviceType}
           </div>
         );
       },
@@ -168,6 +194,7 @@ export default function UsersPage() {
       header: ({ column }) => <SortHeader column={column}>Sessions</SortHeader>,
       cell: info => <div className="whitespace-nowrap">{info.getValue().toLocaleString()}</div>,
     }),
+
     columnHelper.accessor("last_seen", {
       header: ({ column }) => <SortHeader column={column}>Last Seen</SortHeader>,
       cell: info => {
@@ -287,7 +314,7 @@ export default function UsersPage() {
                     const href = `/${site}/user/${userId}`;
 
                     return (
-                      <tr key={row.id} className="border-b border-neutral-800  group">
+                      <tr key={row.id} className="border-b border-neutral-800 group">
                         {row.getVisibleCells().map(cell => (
                           <td key={cell.id} className="px-3 py-3 relative">
                             {/* <Link

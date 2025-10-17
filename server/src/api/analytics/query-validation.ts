@@ -250,6 +250,9 @@ export const filterParamSchema = z.enum([
   "dimensions",
   "browser_version",
   "operating_system_version",
+  "user_id",
+  "lat",
+  "lon",
 ]);
 
 /**
@@ -258,7 +261,7 @@ export const filterParamSchema = z.enum([
 const filterSchema = z.object({
   parameter: filterParamSchema,
   type: filterTypeSchema,
-  value: z.array(z.string()),
+  value: z.array(z.string().or(z.number())),
 });
 
 // =============================================================================

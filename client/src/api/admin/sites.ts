@@ -17,6 +17,15 @@ export type SiteResponse = {
   saltUserIds: boolean;
   blockBots: boolean;
   isOwner: boolean;
+  // Analytics features
+  sessionReplay?: boolean;
+  webVitals?: boolean;
+  trackErrors?: boolean;
+  trackOutbound?: boolean;
+  trackUrlParams?: boolean;
+  trackInitialPageView?: boolean;
+  trackSpaNavigation?: boolean;
+  trackIp?: boolean;
 };
 
 export type GetSitesFromOrgResponse = {
@@ -52,6 +61,7 @@ export type GetSitesFromOrgResponse = {
     overMonthlyLimit: boolean;
     planName: string;
     status: string;
+    isPro: boolean;
   };
 };
 
@@ -98,25 +108,29 @@ export function deleteSite(siteId: number) {
   });
 }
 
-export function changeSiteDomain(siteId: number, newDomain: string) {
-  return authedFetch("/change-site-domain", undefined, {
+// Consolidated function to update any site configuration
+export function updateSiteConfig(
+  siteId: number,
+  config: {
+    domain?: string;
+    public?: boolean;
+    saltUserIds?: boolean;
+    blockBots?: boolean;
+    excludedIPs?: string[];
+    sessionReplay?: boolean;
+    webVitals?: boolean;
+    trackErrors?: boolean;
+    trackOutbound?: boolean;
+    trackUrlParams?: boolean;
+    trackInitialPageView?: boolean;
+    trackSpaNavigation?: boolean;
+  }
+) {
+  return authedFetch("/update-site-config", undefined, {
     method: "POST",
     data: {
       siteId,
-      newDomain,
-    },
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
-}
-
-export function changeSitePublic(siteId: number, isPublic: boolean) {
-  return authedFetch("/change-site-public", undefined, {
-    method: "POST",
-    data: {
-      siteId,
-      isPublic,
+      ...config,
     },
     headers: {
       "Content-Type": "application/json",
@@ -156,32 +170,6 @@ export function useGetSite(siteId?: string | number) {
     },
     staleTime: 60000, // 1 minute
     enabled: !!siteId,
-  });
-}
-
-export function changeSiteSalt(siteId: number, saltUserIds: boolean) {
-  return authedFetch("/change-site-salt", undefined, {
-    method: "POST",
-    data: {
-      siteId,
-      saltUserIds,
-    },
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
-}
-
-export function changeSiteBlockBots(siteId: number, blockBots: boolean) {
-  return authedFetch("/change-site-block-bots", undefined, {
-    method: "POST",
-    data: {
-      siteId,
-      blockBots,
-    },
-    headers: {
-      "Content-Type": "application/json",
-    },
   });
 }
 

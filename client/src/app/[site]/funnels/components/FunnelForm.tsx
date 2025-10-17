@@ -1,29 +1,22 @@
-import { Time } from "@/components/DateSelector/types";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { InputWithSuggestions, SuggestionOption } from "@/components/ui/input-with-suggestions";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ListFilterPlus, Plus, Save, Trash2 } from "lucide-react";
+import { Plus, Save, Trash2 } from "lucide-react";
 import { useState } from "react";
-import { ThreeDotLoader } from "../../../../components/Loaders";
-import { Filter } from "@rybbit/shared";
-import { FilterComponent } from "../../components/shared/Filters/FilterComponent";
-import { Funnel } from "./Funnel";
-import { Switch } from "../../../../components/ui/switch";
-import { Label } from "../../../../components/ui/label";
 import { FunnelResponse, FunnelStep } from "../../../../api/analytics/funnels/useGetFunnel";
 import { useSingleCol } from "../../../../api/analytics/useSingleCol";
+import { ThreeDotLoader } from "../../../../components/Loaders";
+import { Label } from "../../../../components/ui/label";
+import { Switch } from "../../../../components/ui/switch";
+import { Funnel } from "./Funnel";
 
 interface FunnelFormProps {
   name: string;
   setName: (name: string) => void;
   steps: FunnelStep[];
   setSteps: (steps: FunnelStep[]) => void;
-  time: Time;
-  setTime: (time: Time) => void;
-  filters: Filter[];
-  setFilters: (filters: Filter[]) => void;
   onSave: () => void;
   onCancel: () => void;
   onQuery: () => void;
@@ -41,10 +34,6 @@ export function FunnelForm({
   setName,
   steps,
   setSteps,
-  time,
-  setTime,
-  filters,
-  setFilters,
   onSave,
   onCancel,
   onQuery,
@@ -56,7 +45,6 @@ export function FunnelForm({
   saveError,
   funnelData,
 }: FunnelFormProps) {
-  const [showFilters, setShowFilters] = useState(filters.length > 0);
   // State to track which event steps have property filtering enabled
   const [useProperties, setUseProperties] = useState<boolean[]>(() =>
     steps.map(step => !!step.eventPropertyKey && step.eventPropertyValue !== undefined)
@@ -150,36 +138,9 @@ export function FunnelForm({
     }
   };
 
-  // Handle filter operations
-  const updateFilter = (filter: Filter | null, index: number) => {
-    if (filter === null) {
-      const newFilters = [...filters];
-      newFilters.splice(index, 1);
-      setFilters(newFilters);
-      return;
-    }
-    const newFilters = [...filters];
-    newFilters[index] = filter;
-    setFilters(newFilters);
-  };
-
-  const addFilter = () => {
-    setFilters([
-      ...filters,
-      {
-        parameter: "pathname",
-        type: "equals",
-        value: [],
-      },
-    ]);
-    setShowFilters(true);
-  };
-
   let funnelArea = null;
   if (funnelData && funnelData.length) {
-    funnelArea = (
-      <Funnel data={funnelData} isError={isError} error={error} isPending={isPending} time={time} setTime={setTime} />
-    );
+    funnelArea = <Funnel data={funnelData} isError={isError} error={error} isPending={isPending} steps={steps} />;
   }
 
   if (steps.some(step => !step.value)) {
@@ -303,34 +264,6 @@ export function FunnelForm({
                 </div>
               ))}
             </CardContent>
-          </Card>
-
-          {/* Filters Section */}
-          <Card className="border border-neutral-200 dark:border-neutral-800">
-            <CardHeader className="p-3 flex flex-row justify-between items-center">
-              <CardTitle className="text-base">Funnel Filters</CardTitle>
-              {!showFilters && (
-                <Button variant="outline" size="sm" onClick={addFilter}>
-                  <ListFilterPlus className="mr-2 h-4 w-4" />
-                  Add Filters
-                </Button>
-              )}
-            </CardHeader>
-            {showFilters && (
-              <CardContent className="p-3 space-y-4">
-                <div className="flex flex-col gap-2">
-                  {filters.map((filter, index) => (
-                    <FilterComponent key={index} filter={filter} index={index} updateFilter={updateFilter} />
-                  ))}
-                </div>
-                <div className="flex justify-between">
-                  <Button variant="ghost" size="sm" onClick={addFilter} className="gap-1">
-                    <Plus className="w-3 h-3" />
-                    Add Filter
-                  </Button>
-                </div>
-              </CardContent>
-            )}
           </Card>
         </div>
         {funnelArea}

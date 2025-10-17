@@ -8,6 +8,7 @@ interface SubscriptionData {
   status: "expired" | "active" | "trialing" | "free";
   currentPeriodEnd: string;
   currentPeriodStart: string;
+  createdAt: string;
   monthlyEventCount: number;
   eventLimit: number;
   interval: string;
@@ -15,6 +16,8 @@ interface SubscriptionData {
   isTrial?: boolean;
   trialDaysRemaining?: number;
   message?: string; // For expired trial message
+  isPro?: boolean;
+  appSumoPlan?: string;
 }
 
 export function useStripeSubscription() {

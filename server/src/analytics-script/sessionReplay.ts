@@ -77,10 +77,10 @@ export class SessionReplayRecorder {
             timestamp: event.timestamp || Date.now(),
           });
         },
-        recordCanvas: true, // Record canvas elements
-        collectFonts: true, // Collect font info for better replay
-        checkoutEveryNms: 30000, // Checkout every 30 seconds
-        checkoutEveryNth: 200, // Checkout every 200 events
+        recordCanvas: false, // Disable canvas recording to reduce data
+        collectFonts: true, // Disable font collection to reduce data
+        checkoutEveryNms: 60000, // Checkout every 60 seconds (was 30)
+        checkoutEveryNth: 500, // Checkout every 500 events (was 200)
         maskAllInputs: true, // Mask all input values for privacy
         maskInputOptions: {
           password: true,
@@ -99,11 +99,22 @@ export class SessionReplayRecorder {
           headMetaVerification: true,
         },
         sampling: {
-          // Optional: reduce recording frequency to save bandwidth
-          mousemove: false, // Don't record every mouse move
-          mouseInteraction: true,
-          scroll: 150, // Sample scroll events every 150ms
+          // Aggressive sampling to reduce data volume
+          mousemove: false, // Don't record mouse moves at all
+          mouseInteraction: {
+            MouseUp: false,
+            MouseDown: false,
+            Click: true, // Only record clicks
+            ContextMenu: false,
+            DblClick: true,
+            Focus: true,
+            Blur: true,
+            TouchStart: false,
+            TouchEnd: false,
+          },
+          scroll: 500, // Sample scroll events every 500ms (was 150)
           input: "last", // Only record the final input value
+          media: 800, // Sample media interactions less frequently
         },
       });
 

@@ -5,16 +5,23 @@ import { getIpAddress } from "../../utils.js";
 import { userIdService } from "../userId/userIdService.js";
 import { trackingPayloadSchema } from "./trackEvent.js";
 import { TrackingPayload } from "./types.js";
+import { SiteConfigData } from "../../lib/siteConfig.js";
 
 export type TotalTrackingPayload = TrackingPayload & {
+  userId: string;
+  timestamp: string;
   type?: string;
   event_name?: string;
   properties?: string;
-  userId: string;
-  timestamp: string;
   ua: UAParser.IResult;
   referrer: string;
   ipAddress: string;
+  storeIp?: boolean;
+  lcp?: number;
+  cls?: number;
+  inp?: number;
+  fcp?: number;
+  ttfb?: number;
 };
 
 // Infer type from Zod schema
@@ -86,7 +93,7 @@ export async function createBasePayload(
   request: FastifyRequest,
   eventType: "pageview" | "custom_event" | "performance" | "error" | "outbound" = "pageview",
   validatedBody: ValidatedTrackingPayload,
-  numericSiteId: number
+  siteConfiguration: SiteConfigData
 ): Promise<TotalTrackingPayload> {
   // Use custom user agent if provided, otherwise fall back to header
   const userAgent = validatedBody.user_agent || request.headers["user-agent"] || "";
@@ -96,11 +103,11 @@ export async function createBasePayload(
   // Use custom user ID if provided, otherwise generate one
   const userId = validatedBody.user_id
     ? validatedBody.user_id.trim()
-    : await userIdService.generateUserId(ipAddress, userAgent, numericSiteId);
+    : await userIdService.generateUserId(ipAddress, userAgent, siteConfiguration.siteId);
 
   return {
     ...validatedBody,
-    site_id: numericSiteId, // Use the numeric site ID
+    site_id: siteConfiguration.siteId, // Use the numeric site ID
     hostname: validatedBody.hostname || "",
     pathname: validatedBody.pathname || "",
     querystring: validatedBody.querystring || "",
@@ -114,5 +121,6 @@ export async function createBasePayload(
     timestamp: new Date().toISOString(),
     ua: userAgentParser(userAgent),
     userId: userId,
-  };
+    storeIp: siteConfiguration.trackIp,
+  } as any;
 }

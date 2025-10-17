@@ -3,18 +3,8 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  ArrowRight,
-  Clock,
-  ExternalLink,
-  FileText,
-  Loader2,
-  Monitor,
-  MousePointerClick,
-  Smartphone,
-  Tablet,
-  TriangleAlert,
-} from "lucide-react";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { ArrowRight, Clock, ExternalLink, Loader2, Monitor, Smartphone, Tablet, TriangleAlert } from "lucide-react";
 import { DateTime } from "luxon";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -23,13 +13,12 @@ import { GetSessionsResponse, SessionEvent, useGetSessionDetailsInfinite } from 
 import { Browser } from "../../app/[site]/components/shared/icons/Browser";
 import { CountryFlag } from "../../app/[site]/components/shared/icons/CountryFlag";
 import { OperatingSystem } from "../../app/[site]/components/shared/icons/OperatingSystem";
-import { cn, getCountryName, getLanguageName } from "../../lib/utils";
-import { formatDuration } from "../../lib/dateTimeUtils";
-import { Button } from "../ui/button";
-import { hour12 } from "../../lib/dateTimeUtils";
+import { formatDuration, hour12 } from "../../lib/dateTimeUtils";
 import { useGetRegionName } from "../../lib/geo";
+import { cn, getCountryName, getLanguageName } from "../../lib/utils";
 import { Avatar } from "../Avatar";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { EventIcon, PageviewIcon } from "../EventIcons";
+import { Button } from "../ui/button";
 
 // Component to display a single pageview or event
 function PageviewItem({
@@ -91,13 +80,13 @@ function PageviewItem({
         <div className="flex items-center flex-1 py-1">
           <div className="flex-shrink-0 mr-3">
             {isEvent ? (
-              <MousePointerClick className="w-4 h-4 text-amber-500" />
+              <EventIcon />
             ) : isError ? (
               <TriangleAlert className="w-4 h-4 text-red-500" />
             ) : isOutbound ? (
               <ExternalLink className="w-4 h-4 text-purple-500" />
             ) : (
-              <FileText className="w-4 h-4 text-blue-500" />
+              <PageviewIcon />
             )}
           </div>
 
@@ -410,8 +399,8 @@ export function SessionDetails({ session, userId }: SessionDetailsProps) {
                 <div className="space-y-3">
                   {sessionDetails?.user_id && (
                     <div className="flex items-center gap-2">
-                      <div className="h-7 w-7 bg-neutral-800 rounded-full flex items-center justify-center flex-shrink-0">
-                        <Avatar size={24} name={sessionDetails.user_id} />
+                      <div className="h-10 w-10 bg-neutral-800 rounded-full flex items-center justify-center flex-shrink-0">
+                        <Avatar size={40} id={sessionDetails.user_id} />
                       </div>
                       <div>
                         <div className="text-sm text-neutral-400 flex items-center">
@@ -512,6 +501,12 @@ export function SessionDetails({ session, userId }: SessionDetailsProps) {
                       </span>
                     </div>
                   ) : null}
+                  {sessionDetails?.ip && (
+                    <div className="flex items-center gap-2 text-sm">
+                      <span className="font-medium text-neutral-300 min-w-[80px]">IP:</span>
+                      <span className="text-neutral-400">{sessionDetails.ip}</span>
+                    </div>
+                  )}
                 </div>
               </div>
 

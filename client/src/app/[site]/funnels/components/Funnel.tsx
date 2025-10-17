@@ -1,9 +1,8 @@
 "use client";
 
-import { DateSelector } from "@/components/DateSelector/DateSelector";
-import { Time } from "@/components/DateSelector/types";
 import { round } from "lodash";
-import { FunnelResponse } from "../../../../api/analytics/funnels/useGetFunnel";
+import { FunnelResponse, FunnelStep } from "../../../../api/analytics/funnels/useGetFunnel";
+import { EventIcon, PageviewIcon } from "../../../../components/EventIcons";
 
 export type FunnelChartData = {
   stepName: string;
@@ -18,11 +17,10 @@ interface FunnelProps {
   isError: boolean;
   error: unknown;
   isPending: boolean;
-  time: Time;
-  setTime: (time: Time) => void;
+  steps: FunnelStep[];
 }
 
-export function Funnel({ data, isError, error, isPending, time, setTime }: FunnelProps) {
+export function Funnel({ data, steps, isError, error, isPending }: FunnelProps) {
   // Prepare chart data
   const chartData =
     data?.map(step => ({
@@ -41,32 +39,7 @@ export function Funnel({ data, isError, error, isPending, time, setTime }: Funne
   const maxBarWidth = 100; // as percentage
 
   return (
-    <div>
-      <div className="flex justify-between items-center gap-2 mb-6 ml-8">
-        <div className="flex items-center gap-4 mt-3 text-xs text-neutral-400">
-          <div className="flex items-center">
-            <div className="w-3 h-3 bg-emerald-500/70 rounded-sm mr-1"></div>
-            <span>Overall conversion</span>
-          </div>
-          <div className="flex items-center">
-            <div
-              className="w-3 h-3 rounded-sm mr-1"
-              style={{
-                background: `repeating-linear-gradient(
-                      45deg,
-                      rgba(16, 185, 129, 0.25),
-                      rgba(16, 185, 129, 0.25) 3px,
-                      rgba(16, 185, 129, 0.15) 3px,
-                      rgba(16, 185, 129, 0.15) 6px
-                    )`,
-              }}
-            ></div>
-            <span>Conversion from previous step</span>
-          </div>
-        </div>
-        <DateSelector time={time} setTime={setTime} pastMinutesEnabled={false} />
-      </div>
-
+    <div className="mt-2">
       {isError ? (
         <div className="h-[400px] flex items-center justify-center">
           <div className="text-red-500">
@@ -86,27 +59,35 @@ export function Funnel({ data, isError, error, isPending, time, setTime }: Funne
             const dropoffPercent = prevStep ? (droppedUsers / prevStep.visitors) * 100 : 0;
 
             return (
-              <div key={step.stepNumber} className="relative pb-6">
+              <div key={step.stepNumber} className="relative pb-4">
                 {/* Step number indicator */}
-                <div className="flex items-center mb-2">
+                <div className="flex items-center">
                   <div className="flex-shrink-0 w-6 h-6 rounded-full bg-neutral-800 flex items-center justify-center text-xs mr-2">
                     {step.stepNumber}
                   </div>
-                  <div className="font-medium text-base">{step.stepName}</div>
+                  <div className="font-medium text-sm flex items-center gap-2">
+                    {steps[index].type === "page" ? <PageviewIcon /> : <EventIcon />}
+                    {step.stepName}
+                  </div>
                 </div>
 
                 {/* Bar and metrics */}
                 <div className="flex items-center pl-8">
                   {/* Metrics */}
-                  <div className="flex-shrink-0 min-w-[130px] mr-4">
+                  <div className="flex-shrink-0 min-w-[130px] mr-4 space-y-1">
                     <div className="flex items-baseline">
-                      <span className="text-lg font-semibold">{step.visitors.toLocaleString()}</span>
+                      <span className="text-base font-semibold">{step.visitors.toLocaleString()}</span>
                       <span className="text-sm text-neutral-400 ml-1">users</span>
                     </div>
+                    {index !== 0 && (
+                      <div className="flex items-baseline text-orange-500 text-xs font-medium">
+                        {droppedUsers.toLocaleString()} dropped
+                      </div>
+                    )}
                   </div>
 
                   {/* Bar */}
-                  <div className="flex-grow h-10 bg-neutral-800 rounded-md overflow-hidden relative">
+                  <div className="flex-grow h-10 bg-neutral-800 rounded-md overflow-hidden relative mt-2">
                     {/* Relative conversion bar (from previous step) */}
                     {index > 0 && prevStep && (
                       <div
@@ -133,27 +114,6 @@ export function Funnel({ data, isError, error, isPending, time, setTime }: Funne
                     </div>
                   </div>
                 </div>
-
-                {/* Dropoff indicator */}
-                {index < chartData.length - 1 && (
-                  <div className="absolute left-[11px] -bottom-6 top-6 flex flex-col items-center">
-                    <div className="h-full w-0.5 bg-neutral-800"></div>
-                  </div>
-                )}
-
-                {/* Dropoff metrics */}
-                {index !== 0 && (
-                  <div className="pl-8 flex">
-                    <div className="min-w-[180px] mr-4">
-                      <div className="flex items-baseline text-orange-500">
-                        <span className="text-sm font-medium">{droppedUsers.toLocaleString()} dropped</span>
-                        {/* <span className="text-sm text-neutral-400 ml-1">
-                            ({dropoffPercent.toFixed(2)}%)
-                          </span> */}
-                      </div>
-                    </div>
-                  </div>
-                )}
               </div>
             );
           })}
@@ -165,6 +125,29 @@ export function Funnel({ data, isError, error, isPending, time, setTime }: Funne
           </div>
         </div>
       )}
+      <div className="flex justify-between items-center gap-2 ml-4">
+        <div className="flex items-center gap-4 mt-3 text-xs text-neutral-400">
+          <div className="flex items-center">
+            <div className="w-3 h-3 bg-emerald-500/70 rounded-sm mr-1"></div>
+            <span>Overall conversion</span>
+          </div>
+          <div className="flex items-center">
+            <div
+              className="w-3 h-3 rounded-sm mr-1"
+              style={{
+                background: `repeating-linear-gradient(
+                      45deg,
+                      rgba(16, 185, 129, 0.25),
+                      rgba(16, 185, 129, 0.25) 3px,
+                      rgba(16, 185, 129, 0.15) 3px,
+                      rgba(16, 185, 129, 0.15) 6px
+                    )`,
+              }}
+            ></div>
+            <span>Conversion from previous step</span>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

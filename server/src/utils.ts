@@ -1,5 +1,4 @@
 import { FastifyRequest } from "fastify";
-import { siteConfig } from "./lib/siteConfig.js";
 import * as psl from "psl";
 
 const desktopOS = new Set([
@@ -120,17 +119,6 @@ export function getDeviceType(screenWidth: number, screenHeight: number, ua: UAP
   }
   return "Mobile";
 }
-
-// Check if a site is public
-export const isSitePublic = async (siteId: string | number) => {
-  try {
-    // Use the cached value
-    return await siteConfig.isSitePublic(siteId);
-  } catch (err) {
-    console.error("Error checking if site is public:", err);
-    return false;
-  }
-};
 
 // Extract site ID from path
 export const extractSiteId = (path: string) => {

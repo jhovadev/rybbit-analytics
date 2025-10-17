@@ -1,18 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { AlertCircle } from "lucide-react";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { StandardPage } from "@/components/StandardPage";
-import { useAdminUsers } from "@/hooks/useAdminUsers";
-import { UsersTable } from "@/app/admin/components/users/UsersTable";
-import { UserFilters } from "@/app/admin/components/users/UserFilters";
-import { AdminTablePagination } from "@/app/admin/components/shared/AdminTablePagination";
 import { AdminLayout } from "@/app/admin/components/shared/AdminLayout";
+import { AdminTablePagination } from "@/app/admin/components/shared/AdminTablePagination";
 import { ErrorAlert } from "@/app/admin/components/shared/ErrorAlert";
-import { authClient } from "@/lib/auth";
+import { UserFilters } from "@/app/admin/components/users/UserFilters";
+import { UsersTable } from "@/app/admin/components/users/UsersTable";
+import { useAdminUsers } from "@/hooks/useAdminUsers";
+import { useRouter } from "next/navigation";
 
 export function Users() {
   const router = useRouter();

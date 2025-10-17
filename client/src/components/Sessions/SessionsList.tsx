@@ -21,7 +21,7 @@ export default function SessionsList({ userId }: { userId?: string }) {
   if (error) return <div className="text-red-500 p-4">Error: {(error as Error).message}</div>;
 
   return (
-    <div ref={containerRef} className="overflow-auto ">
+    <div ref={containerRef} className="overflow-auto space-y-3">
       {isLoading ? (
         // Show skeleton cards while loading
         <SessionCardSkeleton />
@@ -38,11 +38,7 @@ export default function SessionsList({ userId }: { userId?: string }) {
         ))
       )}
 
-      {isFetchingNextPage && (
-        <div className="">
-          <SessionCardSkeleton key="loading-more" />
-        </div>
-      )}
+      {isFetchingNextPage && <SessionCardSkeleton key="loading-more" />}
 
       {hasNextPage && (
         <div className="flex justify-center py-2">

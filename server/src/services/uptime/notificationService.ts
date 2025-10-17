@@ -3,7 +3,7 @@ import { and, eq, InferSelectModel } from "drizzle-orm";
 import { db } from "../../db/postgres/postgres.js";
 import { notificationChannels } from "../../db/postgres/schema.js";
 import { createServiceLogger } from "../../lib/logger/logger.js";
-import { sendEmail } from "../../lib/resend.js";
+import { sendEmail } from "../../lib/email/email.js";
 import { sendSMS } from "../../lib/twilio.js";
 
 // Type inferred from Drizzle schema

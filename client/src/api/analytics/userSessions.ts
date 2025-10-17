@@ -1,6 +1,7 @@
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { timeZone } from "../../lib/dateTimeUtils";
-import { getFilteredFilters, SESSION_PAGE_FILTERS, useStore } from "../../lib/store";
+import { getFilteredFilters, useStore } from "../../lib/store";
+import { SESSION_PAGE_FILTERS } from "../../lib/filterGroups";
 import { APIResponse } from "../types";
 import { authedFetch, getQueryParams } from "../utils";
 
@@ -20,6 +21,9 @@ export type GetSessionsResponse = {
   screen_height: number;
   referrer: string;
   channel: string;
+  hostname: string;
+  page_title: string;
+  querystring: string;
   utm_source: string;
   utm_medium: string;
   utm_campaign: string;
@@ -34,10 +38,13 @@ export type GetSessionsResponse = {
   events: number;
   errors: number;
   outbound: number;
+  ip: string;
+  lat: number;
+  lon: number;
 }[];
 
 export function useGetSessionsInfinite(userId?: string) {
-  const { time, site, filters } = useStore();
+  const { time, site } = useStore();
 
   // Get the appropriate time parameters using getQueryParams
   const timeParams = getQueryParams(time);
@@ -103,6 +110,7 @@ export interface SessionDetails {
   pageviews: number;
   entry_page: string;
   exit_page: string;
+  ip: string;
 }
 
 export interface SessionEventProps {

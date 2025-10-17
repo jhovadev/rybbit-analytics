@@ -26,6 +26,7 @@ export interface SessionDetails {
   events: number;
   entry_page: string;
   exit_page: string;
+  ip: string;
 }
 
 export interface Event {
@@ -105,7 +106,8 @@ SELECT
     countIf(type = 'pageview') as pageviews,
     count() as events,
     argMinIf(pathname, timestamp, type = 'pageview') as entry_page,
-    argMaxIf(pathname, timestamp, type = 'pageview') as exit_page
+    argMaxIf(pathname, timestamp, type = 'pageview') as exit_page,
+    any(ip) AS ip
 FROM events
 WHERE 
     site_id = {siteId:Int32}

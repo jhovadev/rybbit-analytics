@@ -71,7 +71,11 @@ function Organization({
               {isOwner && (
                 <>
                   {IS_CLOUD ? (
-                    <InviteMemberDialog organizationId={org.id} onSuccess={handleRefresh} />
+                    <InviteMemberDialog
+                      organizationId={org.id}
+                      onSuccess={handleRefresh}
+                      memberCount={members?.data?.length || 0}
+                    />
                   ) : (
                     <CreateUserDialog organizationId={org.id} onSuccess={handleRefresh} />
                   )}

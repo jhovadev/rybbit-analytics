@@ -11,7 +11,7 @@ declare global {
   }
 }
 
-(function () {
+(async function () {
   const scriptTag = document.currentScript as HTMLScriptElement;
   if (!scriptTag) {
     console.error("Could not find current script tag");
@@ -36,8 +36,8 @@ declare global {
     return;
   }
 
-  // Parse configuration
-  const config = parseScriptConfig(scriptTag);
+  // Parse configuration (now async to fetch from API)
+  const config = await parseScriptConfig(scriptTag);
   if (!config) {
     return;
   }

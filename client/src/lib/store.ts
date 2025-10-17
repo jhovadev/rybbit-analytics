@@ -5,109 +5,6 @@ import { Time } from "../components/DateSelector/types";
 
 export type StatType = "pageviews" | "sessions" | "users" | "pages_per_session" | "bounce_rate" | "session_duration";
 
-export const SESSION_PAGE_FILTERS: FilterParameter[] = [
-  "hostname",
-  "browser",
-  "browser_version",
-  "operating_system",
-  "operating_system_version",
-  "language",
-  "country",
-  "region",
-  "city",
-  "device_type",
-  "referrer",
-  "event_name",
-  "channel",
-  "entry_page",
-  "exit_page",
-  "utm_source",
-  "utm_medium",
-  "utm_campaign",
-  "utm_term",
-  "utm_content",
-];
-
-export const SESSION_REPLAY_PAGE_FILTERS: FilterParameter[] = [
-  "hostname",
-  "browser",
-  "browser_version",
-  "operating_system",
-  "operating_system_version",
-  "language",
-  "country",
-  "region",
-  "city",
-  "device_type",
-  "referrer",
-  "channel",
-];
-
-export const EVENT_FILTERS: FilterParameter[] = [
-  // "event_name",
-  // "browser",
-  // "operating_system",
-  // "country",
-  // "device_type",
-  // "referrer",
-  "hostname",
-  "browser",
-  "browser_version",
-  "operating_system",
-  "operating_system_version",
-  "language",
-  "country",
-  "region",
-  "city",
-  "device_type",
-  "referrer",
-  "pathname",
-  "page_title",
-  "querystring",
-  "event_name",
-  "channel",
-  "utm_source",
-  "utm_medium",
-  "utm_campaign",
-  "utm_term",
-  "utm_content",
-  "entry_page",
-  "exit_page",
-  "dimensions",
-];
-
-export const GOALS_PAGE_FILTERS: FilterParameter[] = [
-  "hostname",
-  "browser",
-  "browser_version",
-  "operating_system",
-  "operating_system_version",
-  "language",
-  "country",
-  "region",
-  "city",
-  "device_type",
-  "referrer",
-  "event_name",
-  "channel",
-  "entry_page",
-  "exit_page",
-];
-
-export const USER_PAGE_FILTERS: FilterParameter[] = [
-  "hostname",
-  "browser",
-  "browser_version",
-  "operating_system",
-  "operating_system_version",
-  "language",
-  "country",
-  "region",
-  "city",
-  "device_type",
-  "referrer",
-];
-
 type Store = {
   site: string;
   setSite: (site: string) => void;
@@ -144,12 +41,14 @@ export const useStore = create<Store>(set => ({
         : {
             mode: "day",
             day: DateTime.now().toISODate(),
+            wellKnown: "today",
           },
       previousTime: hasTimeInUrl
         ? state.previousTime
         : {
             mode: "day",
             day: DateTime.now().minus({ days: 1 }).toISODate(),
+            wellKnown: "yesterday",
           },
       bucket: hasBucketInUrl ? state.bucket : "hour",
       selectedStat: hasStatInUrl ? state.selectedStat : "users",
@@ -158,10 +57,12 @@ export const useStore = create<Store>(set => ({
   time: {
     mode: "day",
     day: DateTime.now().toISODate(),
+    wellKnown: "today",
   },
   previousTime: {
     mode: "day",
     day: DateTime.now().minus({ days: 1 }).toISODate(),
+    wellKnown: "yesterday",
   },
   setTime: (time, changeBucket = true) => {
     let bucketToUse: TimeBucket = "hour";
@@ -245,7 +146,7 @@ export const useStore = create<Store>(set => ({
 export const resetStore = () => {
   const { setSite, setTime, setBucket, setSelectedStat, setFilters } = useStore.getState();
   setSite("");
-  setTime({ mode: "day", day: DateTime.now().toISODate() });
+  setTime({ mode: "day", day: DateTime.now().toISODate(), wellKnown: "today" });
   setBucket("hour");
   setSelectedStat("users");
   setFilters([]);
@@ -362,14 +263,14 @@ export const goForward = () => {
 
 export const addFilter = (filter: Filter) => {
   const { filters, setFilters } = useStore.getState();
-  const filterExists = filters.some(
-    f =>
-      f.parameter === filter.parameter &&
-      f.type === filter.type &&
-      JSON.stringify(f.value) === JSON.stringify(filter.value)
+  const filterExists = filters.findIndex(
+    f => f.parameter === filter.parameter && f.type === filter.type
+    // JSON.stringify(f.value) === JSON.stringify(filter.value)
   );
-  if (!filterExists) {
+  if (filterExists === -1) {
     setFilters([...filters, filter]);
+  } else {
+    setFilters(filters.map((f, i) => (i === filterExists ? filter : f)));
   }
 };
 

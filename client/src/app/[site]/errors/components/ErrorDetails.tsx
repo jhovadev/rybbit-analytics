@@ -144,7 +144,7 @@ function ErrorEventItem({ errorEvent }: { errorEvent: ErrorEvent }) {
                 <Link href={`/${site}/user/${errorEvent.user_id}`}>
                   <Badge variant="outline" className="text-xs">
                     <User className="w-3 h-3 mr-1" />
-                    {errorEvent.user_id.substring(0, 8)}
+                    {errorEvent.user_id.substring(0, 12)}
                   </Badge>
                 </Link>
               </TooltipTrigger>

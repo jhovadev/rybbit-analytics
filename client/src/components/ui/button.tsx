@@ -12,7 +12,7 @@ const buttonVariants = cva(
         default:
           "bg-neutral-50 text-neutral-950 border border-neutral-200 shadow hover:bg-neutral-900/90 dark:bg-neutral-850 dark:border-neutral-750 dark:text-neutral-50 dark:hover:bg-neutral-800/90 dark:hover:border-neutral-650",
         secondary:
-          "bg-neutral-100 text-neutral-900 shadow-sm hover:bg-neutral-100/80 dark:bg-neutral-50 dark:text-neutral-800 dark:hover:bg-neutral-50/90",
+          "bg-neutral-900 border border-neutral-800 shadow-sm hover:bg-neutral-800/80 hover:border-neutral-700",
         accent:
           "bg-neutral-500 text-neutral-900 shadow-sm hover:bg-neutral-500/80 dark:bg-accent-600 dark:text-neutral-50 dark:hover:bg-accent-600/90",
         success:

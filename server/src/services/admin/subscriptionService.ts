@@ -1,6 +1,6 @@
-import { getStripePrices, StripePlan, DEFAULT_EVENT_LIMIT } from "../../lib/const.js";
-import { stripe } from "../../lib/stripe.js";
 import { DateTime } from "luxon";
+import { DEFAULT_EVENT_LIMIT, getStripePrices } from "../../lib/const.js";
+import { stripe } from "../../lib/stripe.js";
 
 export interface SubscriptionData {
   id: string;
@@ -11,14 +11,6 @@ export interface SubscriptionData {
   cancelAtPeriodEnd?: boolean;
   eventLimit?: number;
   interval?: string;
-}
-
-// Function to find plan details by price ID
-function findPlanDetails(priceId: string): StripePlan | undefined {
-  return getStripePrices().find(
-    (plan: StripePlan) =>
-      plan.priceId === priceId || (plan.annualDiscountPriceId && plan.annualDiscountPriceId === priceId)
-  );
 }
 
 /**
@@ -57,7 +49,7 @@ async function fetchSubscriptionsForCustomers(
           const priceId = subscriptionItem.price.id;
 
           if (priceId) {
-            const planDetails = findPlanDetails(priceId);
+            const planDetails = getStripePrices().find(plan => plan.priceId === priceId);
 
             const subscriptionData: SubscriptionData = {
               id: subscription.id,

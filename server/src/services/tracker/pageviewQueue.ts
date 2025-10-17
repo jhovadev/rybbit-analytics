@@ -4,25 +4,10 @@ import { getLocation } from "../../db/geolocation/geolocation.js";
 import { createServiceLogger } from "../../lib/logger/logger.js";
 import { getDeviceType } from "../../utils.js";
 import { getChannel } from "./getChannel.js";
-import { clearSelfReferrer, getAllUrlParams } from "./utils.js";
-import { TrackingPayload } from "./types.js";
+import { clearSelfReferrer, getAllUrlParams, TotalTrackingPayload } from "./utils.js";
 
-type TotalPayload = TrackingPayload & {
-  userId: string;
-  timestamp: string;
+type TotalPayload = TotalTrackingPayload & {
   sessionId: string;
-  ua: UAParser.IResult;
-  referrer: string;
-  ipAddress: string;
-  type?: string;
-  event_name?: string;
-  properties?: string;
-  // Performance metrics
-  lcp?: number;
-  cls?: number;
-  inp?: number;
-  fcp?: number;
-  ttfb?: number;
 };
 
 const getParsedProperties = (properties: string | undefined) => {
@@ -126,6 +111,7 @@ class PageviewQueue {
         inp: pv.inp || null,
         fcp: pv.fcp || null,
         ttfb: pv.ttfb || null,
+        ip: pv.storeIp ? pv.ipAddress : null,
         import_id: null,
       };
     });

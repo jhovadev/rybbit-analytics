@@ -217,11 +217,7 @@ export function MonitorDialog({ monitor, open, onOpenChange }: MonitorDialogProp
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit, errors => {
-              console.log("Form validation errors:", errors);
-            })}
-          >
+          <form>
             <DialogHeader>
               <DialogTitle>{isEdit ? "Edit" : "Create New"} Monitor</DialogTitle>
               <DialogDescription>

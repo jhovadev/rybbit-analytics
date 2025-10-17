@@ -35,7 +35,7 @@ export async function validateApiKey(siteId: string | number, apiKey?: string): 
 
   try {
     const numericSiteId = typeof siteId === "string" ? parseInt(siteId, 10) : siteId;
-    const site = await siteConfig.getSiteConfig(numericSiteId);
+    const site = await siteConfig.getConfig(numericSiteId);
 
     if (!site) {
       return { success: false, error: "Site not found" };

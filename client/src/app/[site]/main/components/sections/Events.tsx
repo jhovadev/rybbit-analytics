@@ -45,9 +45,7 @@ function OutboundLinks({ expanded, close }: { expanded: boolean; close: () => vo
       <div className="relative">
         <div className="flex flex-row gap-2 justify-between pr-1 text-xs text-neutral-400 mb-2">
           <div>Outbound Links</div>
-          <div className="flex items-center gap-2">
-            <div>Clicks</div>
-          </div>
+          <div>Clicks</div>
         </div>
         <OutboundLinksList outboundLinks={(outboundLinksData || []).slice(0, 10)} isLoading={isLoadingOutboundLinks} />
         <OutboundLinksDialog outboundLinks={outboundLinksData || []} expanded={expanded} close={close} />

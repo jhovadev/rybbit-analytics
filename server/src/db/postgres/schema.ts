@@ -32,9 +32,13 @@ export const user = pgTable(
     banned: boolean(),
     banReason: text(),
     banExpires: timestamp({ mode: "string" }),
+    // deprecated
     stripeCustomerId: text(),
+    // deprecated
     overMonthlyLimit: boolean().default(false),
+    // deprecated
     monthlyEventCount: integer().default(0),
+    sendAutoEmailReports: boolean().default(true),
   },
   table => [unique("user_username_unique").on(table.username), unique("user_email_unique").on(table.email)]
 );
@@ -67,6 +71,14 @@ export const sites = pgTable(
     saltUserIds: boolean().default(false),
     blockBots: boolean().default(true).notNull(),
     excludedIPs: jsonb("excluded_ips").default([]), // Array of IP addresses/ranges to exclude
+    sessionReplay: boolean().default(false),
+    webVitals: boolean().default(false),
+    trackErrors: boolean().default(false),
+    trackOutbound: boolean().default(true),
+    trackUrlParams: boolean().default(true),
+    trackInitialPageView: boolean().default(true),
+    trackSpaNavigation: boolean().default(true),
+    trackIp: boolean().default(false),
     apiKey: text("api_key"), // Format: rb_{32_hex_chars} = 35 chars total
   },
   table => [

@@ -62,7 +62,7 @@ export function Invitations({ organizationId, isOwner }: InvitationsProps) {
       case "pending":
         return "secondary";
       case "accepted":
-        return "green";
+        return "success";
       case "rejected":
         return "destructive";
       case "canceled":

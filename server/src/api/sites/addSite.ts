@@ -1,10 +1,8 @@
-import { FastifyReply, FastifyRequest } from "fastify";
 import { randomBytes } from "crypto";
+import { FastifyReply, FastifyRequest } from "fastify";
 import { db } from "../../db/postgres/postgres.js";
 import { sites } from "../../db/postgres/schema.js";
-import { loadAllowedDomains } from "../../lib/allowedDomains.js";
 import { getSessionFromReq } from "../../lib/auth-utils.js";
-import { siteConfig } from "../../lib/siteConfig.js";
 
 export async function addSite(
   request: FastifyRequest<{
@@ -67,7 +65,7 @@ export async function addSite(
     }
 
     // Generate a random 12-character hex ID
-    const id = randomBytes(6).toString('hex');
+    const id = randomBytes(6).toString("hex");
 
     // Create the new site
     const newSite = await db
@@ -83,11 +81,6 @@ export async function addSite(
         blockBots: blockBots === undefined ? true : blockBots,
       })
       .returning();
-
-    // Update allowed domains
-    await loadAllowedDomains();
-
-    // No need to update cache as we're querying directly now
 
     return reply.status(201).send(newSite[0]);
   } catch (error) {

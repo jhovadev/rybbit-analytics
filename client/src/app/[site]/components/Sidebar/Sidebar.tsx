@@ -2,30 +2,28 @@
 import {
   AlertTriangle,
   ChartColumnDecreasing,
-  Earth,
   File,
+  Funnel,
   Gauge,
+  Globe2,
   LayoutDashboard,
-  LayoutGrid,
-  Map,
-  Target,
   MousePointerClick,
   Rewind,
   Settings,
   Split,
+  Target,
   User,
   Video,
-  Funnel,
 } from "lucide-react";
 import { usePathname } from "next/navigation";
+import { Suspense } from "react";
 import { useGetSite } from "../../../../api/admin/sites";
 import { Sidebar as SidebarComponents } from "../../../../components/sidebar/Sidebar";
 import { SiteSettings } from "../../../../components/SiteSettings/SiteSettings";
 import { authClient } from "../../../../lib/auth";
 import { IS_CLOUD } from "../../../../lib/const";
-import { SiteSelector } from "./SiteSelector";
 import { useEmbedablePage } from "../../utils";
-import { Suspense } from "react";
+import { SiteSelector } from "./SiteSelector";
 
 function SidebarContent() {
   const session = authClient.useSession();
@@ -59,17 +57,25 @@ function SidebarContent() {
           href={getTabPath("main")}
           icon={<LayoutDashboard className="w-4 h-4" />}
         />
-        <SidebarComponents.Item
+        {/* <SidebarComponents.Item
           label="Realtime"
           active={isActiveTab("realtime")}
           href={getTabPath("realtime")}
           icon={<Earth className="w-4 h-4" />}
-        />
+        /> */}
+        {/* {!IS_CLOUD && (
+          <SidebarComponents.Item
+            label="Map"
+            active={isActiveTab("map")}
+            href={getTabPath("map")}
+            icon={<Map className="w-4 h-4" />}
+          />
+        )} */}
         <SidebarComponents.Item
-          label="Map"
-          active={isActiveTab("map")}
-          href={getTabPath("map")}
-          icon={<Map className="w-4 h-4" />}
+          label="Globe"
+          active={isActiveTab("globe")}
+          href={getTabPath("globe")}
+          icon={<Globe2 className="w-4 h-4" />}
         />
         {IS_CLOUD && (
           <SidebarComponents.Item

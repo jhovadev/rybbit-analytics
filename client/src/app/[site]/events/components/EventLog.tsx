@@ -15,8 +15,6 @@ export function EventLog() {
     pageSize: 100,
   });
 
-  // Remove console.log
-
   // Handle scroll for infinite loading
   const handleScroll = useCallback(() => {
     if (!loadMoreRef.current || !containerRef.current || !hasNextPage || isFetchingNextPage) {

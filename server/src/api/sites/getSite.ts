@@ -2,7 +2,7 @@ import { eq } from "drizzle-orm";
 import { FastifyReply, FastifyRequest } from "fastify";
 import { db } from "../../db/postgres/postgres.js";
 import { sites } from "../../db/postgres/schema.js";
-import { getUserHasAccessToSitePublic } from "../../lib/auth-utils.js";
+import { getUserHasAccessToSitePublic, getUserHasAdminAccessToSite } from "../../lib/auth-utils.js";
 
 interface GetSiteParams {
   Params: {
@@ -12,7 +12,6 @@ interface GetSiteParams {
 
 export async function getSite(request: FastifyRequest<GetSiteParams>, reply: FastifyReply) {
   const { id } = request.params;
-  const userId = request.user?.id;
 
   try {
     // Get site info
@@ -24,11 +23,12 @@ export async function getSite(request: FastifyRequest<GetSiteParams>, reply: Fas
       return reply.status(404).send({ error: "Site not found" });
     }
 
-    // Check if user is authorized to access this site
-    const isOwner = site.createdBy === userId;
+    // Check user access to site and owner status in parallel
+    const [userHasAccessToSite, isOwner] = await Promise.all([
+      getUserHasAccessToSitePublic(request, site.siteId),
+      getUserHasAdminAccessToSite(request, site.siteId),
+    ]);
 
-    // Check user access to site
-    const userHasAccessToSite = await getUserHasAccessToSitePublic(request, site.siteId);
     if (!userHasAccessToSite) {
       return reply.status(403).send({ error: "Forbidden" });
     }
@@ -45,7 +45,16 @@ export async function getSite(request: FastifyRequest<GetSiteParams>, reply: Fas
       saltUserIds: site.saltUserIds,
       public: site.public,
       blockBots: site.blockBots,
+      trackIp: site.trackIp,
       isOwner: isOwner,
+      // Analytics features
+      sessionReplay: site.sessionReplay,
+      webVitals: site.webVitals,
+      trackErrors: site.trackErrors,
+      trackOutbound: site.trackOutbound,
+      trackUrlParams: site.trackUrlParams,
+      trackInitialPageView: site.trackInitialPageView,
+      trackSpaNavigation: site.trackSpaNavigation,
     });
   } catch (error) {
     console.error("Error retrieving site:", error);

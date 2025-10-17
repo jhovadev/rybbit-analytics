@@ -1,10 +1,11 @@
 "use client";
 
 import NumberFlow from "@number-flow/react";
-import { ExternalLink, Info } from "lucide-react";
+import { Info } from "lucide-react";
 import { DateTime } from "luxon";
 import { memo } from "react";
 import { OutboundLink } from "../../../../api/analytics/events/useGetOutboundLinks";
+import { Favicon } from "../../../../components/Favicon";
 import { cn } from "../../../../lib/utils";
 
 // Skeleton component for OutboundLinksList
@@ -110,10 +111,12 @@ export function OutboundLinksList({ outboundLinks, isLoading, size = "small" }: 
 
   // Find the total count to calculate percentages
   const totalCount = outboundLinks.reduce((sum, link) => sum + link.count, 0);
+  const maxCount = Math.max(...outboundLinks.map(link => link.count));
 
   return (
-    <div className="flex flex-col gap-2 pr-2 overflow-y-auto max-h-[60vh] h-auto lg:h-full lg:min-h-0 lg:max-h-full">
+    <div className="flex flex-col gap-2 overflow-y-auto max-h-[60vh] h-auto lg:h-full lg:min-h-0 lg:max-h-full">
       {outboundLinks.map((link, index) => {
+        const percentageOfMax = (link.count / maxCount) * 100;
         const percentage = (link.count / totalCount) * 100;
         const lastClicked = DateTime.fromSQL(link.lastClicked, {
           zone: "utc",
@@ -129,12 +132,13 @@ export function OutboundLinksList({ outboundLinks, isLoading, size = "small" }: 
           >
             <div
               className="absolute inset-0 bg-dataviz py-2 opacity-25 rounded-md"
-              style={{ width: `${percentage}%` }}
+              style={{ width: `${percentageOfMax}%` }}
             ></div>
             <div
               className={cn("z-10 flex justify-between items-center w-full", size === "small" ? "text-xs" : "text-sm")}
             >
               <div className="font-medium truncate max-w-[70%] flex items-center gap-1">
+                <Favicon domain={new URL(link.url).hostname} className="w-4 mr-1" />
                 <a
                   href={link.url}
                   target="_blank"

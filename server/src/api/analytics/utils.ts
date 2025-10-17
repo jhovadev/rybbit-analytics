@@ -155,18 +155,41 @@ export function getFilterStatement(filters: string) {
     filtersArray
       .map(filter => {
         const x = filter.type === "contains" || filter.type === "not_contains" ? "%" : "";
+        const isNumericParam = filter.parameter === "lat" || filter.parameter === "lon";
+
+        // Handle event_name as a session-level filter
+        // This ensures we filter to sessions containing the event, but still count all pageviews in those sessions
+        if (filter.parameter === "event_name") {
+          if (filter.value.length === 1) {
+            return `session_id IN (
+              SELECT DISTINCT session_id
+              FROM events
+              WHERE event_name ${filterTypeToOperator(filter.type)} ${SqlString.escape(x + filter.value[0] + x)}
+            )`;
+          }
+
+          const valuesWithOperator = filter.value.map(
+            value => `event_name ${filterTypeToOperator(filter.type)} ${SqlString.escape(x + value + x)}`
+          );
+
+          return `session_id IN (
+            SELECT DISTINCT session_id
+            FROM events
+            WHERE (${valuesWithOperator.join(" OR ")})
+          )`;
+        }
 
         if (filter.parameter === "entry_page") {
           if (filter.value.length === 1) {
             return `session_id IN (
-              SELECT session_id 
+              SELECT session_id
               FROM (
-                SELECT 
-                  session_id, 
+                SELECT
+                  session_id,
                   argMin(pathname, timestamp) AS entry_pathname
-                FROM events 
+                FROM events
                 GROUP BY session_id
-              ) 
+              )
               WHERE entry_pathname ${filterTypeToOperator(filter.type)} ${SqlString.escape(x + filter.value[0] + x)}
             )`;
           }
@@ -176,14 +199,14 @@ export function getFilterStatement(filters: string) {
           );
 
           return `session_id IN (
-            SELECT session_id 
+            SELECT session_id
             FROM (
-              SELECT 
-                session_id, 
+              SELECT
+                session_id,
                 argMin(pathname, timestamp) AS entry_pathname
-              FROM events 
+              FROM events
               GROUP BY session_id
-            ) 
+            )
             WHERE (${valuesWithOperator.join(" OR ")})
           )`;
         }
@@ -191,14 +214,14 @@ export function getFilterStatement(filters: string) {
         if (filter.parameter === "exit_page") {
           if (filter.value.length === 1) {
             return `session_id IN (
-              SELECT session_id 
+              SELECT session_id
               FROM (
-                SELECT 
-                  session_id, 
+                SELECT
+                  session_id,
                   argMax(pathname, timestamp) AS exit_pathname
-                FROM events 
+                FROM events
                 GROUP BY session_id
-              ) 
+              )
               WHERE exit_pathname ${filterTypeToOperator(filter.type)} ${SqlString.escape(x + filter.value[0] + x)}
             )`;
           }
@@ -208,28 +231,43 @@ export function getFilterStatement(filters: string) {
           );
 
           return `session_id IN (
-            SELECT session_id 
+            SELECT session_id
             FROM (
-              SELECT 
-                session_id, 
+              SELECT
+                session_id,
                 argMax(pathname, timestamp) AS exit_pathname
-              FROM events 
+              FROM events
               GROUP BY session_id
-            ) 
+            )
             WHERE (${valuesWithOperator.join(" OR ")})
           )`;
         }
 
-        if (filter.value.length === 1) {
-          return `${getSqlParam(filter.parameter)} ${filterTypeToOperator(
-            filter.type
-          )} ${SqlString.escape(x + filter.value[0] + x)}`;
+        // Special handling for lat/lon with tolerance
+        if (filter.parameter === "lat" || filter.parameter === "lon") {
+          const tolerance = 0.001;
+          if (filter.value.length === 1) {
+            const targetValue = Number(filter.value[0]);
+            return `${filter.parameter} >= ${targetValue - tolerance} AND ${filter.parameter} <= ${targetValue + tolerance}`;
+          }
+
+          const rangeConditions = filter.value.map(value => {
+            const targetValue = Number(value);
+            return `(${filter.parameter} >= ${targetValue - tolerance} AND ${filter.parameter} <= ${targetValue + tolerance})`;
+          });
+
+          return `(${rangeConditions.join(" OR ")})`;
         }
 
-        const valuesWithOperator = filter.value.map(
-          value =>
-            `${getSqlParam(filter.parameter)} ${filterTypeToOperator(filter.type)} ${SqlString.escape(x + value + x)}`
-        );
+        if (filter.value.length === 1) {
+          const value = isNumericParam ? filter.value[0] : SqlString.escape(x + filter.value[0] + x);
+          return `${getSqlParam(filter.parameter)} ${filterTypeToOperator(filter.type)} ${value}`;
+        }
+
+        const valuesWithOperator = filter.value.map(value => {
+          const escapedValue = isNumericParam ? value : SqlString.escape(x + value + x);
+          return `${getSqlParam(filter.parameter)} ${filterTypeToOperator(filter.type)} ${escapedValue}`;
+        });
 
         return `(${valuesWithOperator.join(" OR ")})`;
       })

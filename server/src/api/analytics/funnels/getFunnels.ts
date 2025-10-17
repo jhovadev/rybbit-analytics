@@ -35,7 +35,6 @@ export async function getFunnels(
         id: record.reportId,
         name: data.name || "Unnamed Funnel",
         steps: data.steps || [],
-        filters: data.filters || [],
         configuration: data.configuration || {},
         createdAt: record.createdAt,
         updatedAt: record.updatedAt,

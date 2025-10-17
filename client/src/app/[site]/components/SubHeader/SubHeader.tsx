@@ -54,7 +54,7 @@ export function SubHeader({ availableFilters }: { availableFilters?: FilterParam
           <DateSelector time={time} setTime={setTime} />
           <div className="flex items-center">
             <Button
-              variant="outline"
+              variant="secondary"
               size="icon"
               onClick={goBack}
               disabled={time.mode === "past-minutes"}
@@ -63,7 +63,7 @@ export function SubHeader({ availableFilters }: { availableFilters?: FilterParam
               <ChevronLeft />
             </Button>
             <Button
-              variant="outline"
+              variant="secondary"
               size="icon"
               onClick={goForward}
               disabled={!canGoForward(time)}

@@ -3,6 +3,9 @@ import { authedFetch } from "../utils";
 
 export type OrgEventCountResponse = {
   event_date: string;
+  pageview_count: number;
+  custom_event_count: number;
+  performance_count: number;
   event_count: number;
 }[];
 

@@ -45,23 +45,26 @@ class UserIdService {
    * @param ip User's IP address
    * @param userAgent User's user agent string
    * @param siteId The site ID to check for salting configuration
-   * @returns A sha256 hash to identify the user
+   * @returns A truncated sha256 hash (12 chars) to identify the user
    */
   async generateUserId(ip: string, userAgent: string, siteId: number): Promise<string> {
     // Only apply salt if the site has salting enabled
-    if (await siteConfig.shouldSaltUserIds(siteId)) {
+    const config = await siteConfig.getConfig(siteId);
+    if (config && config.saltUserIds) {
       const dailySalt = this.getDailySalt(); // Get the salt for the current day
       return crypto
         .createHash("sha256")
         .update(ip + userAgent + dailySalt)
-        .digest("hex");
+        .digest("hex")
+        .substring(0, 12);
     }
 
     // Otherwise, just hash IP and user agent
     return crypto
       .createHash("sha256")
       .update(ip + userAgent)
-      .digest("hex");
+      .digest("hex")
+      .substring(0, 12);
   }
 }
 

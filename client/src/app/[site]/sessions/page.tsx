@@ -2,7 +2,7 @@
 
 import { DisabledOverlay } from "../../../components/DisabledOverlay";
 import { useSetPageTitle } from "../../../hooks/useSetPageTitle";
-import { SESSION_PAGE_FILTERS } from "../../../lib/store";
+import { SESSION_PAGE_FILTERS } from "../../../lib/filterGroups";
 import { SubHeader } from "../components/SubHeader/SubHeader";
 import SessionsList from "@/components/Sessions/SessionsList";
 

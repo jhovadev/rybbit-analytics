@@ -1,11 +1,8 @@
-import { FastifyRequest, FastifyReply } from "fastify";
-import { db } from "../../db/postgres/postgres.js";
-import { sites } from "../../db/postgres/schema.js";
-import { eq, and } from "drizzle-orm";
-import { z } from "zod";
-import { siteConfig } from "../../lib/siteConfig.js";
-import { getUserHasAdminAccessToSite } from "../../lib/auth-utils.js";
 import crypto from "crypto";
+import { FastifyReply, FastifyRequest } from "fastify";
+import { z } from "zod";
+import { getUserHasAdminAccessToSite } from "../../lib/auth-utils.js";
+import { siteConfig } from "../../lib/siteConfig.js";
 
 // Schema for updating API configuration
 const updateApiConfigSchema = z.object({
@@ -56,19 +53,16 @@ export async function updateSiteApiConfig(request: FastifyRequest, reply: Fastif
         break;
     }
 
-    // Update the site
-    const updatedSite = await db.update(sites).set(updateData).where(eq(sites.siteId, parsedSiteId)).returning({
-      apiKey: sites.apiKey,
-    });
-
     // Update the site config cache
     if (action === "generate_api_key" || action === "revoke_api_key") {
-      siteConfig.updateSiteApiKey(parsedSiteId, updateData.apiKey);
+      siteConfig.updateConfig(parsedSiteId, { apiKey: updateData.apiKey });
     }
 
     return reply.send({
       success: true,
-      data: updatedSite[0],
+      data: {
+        apiKey: updateData.apiKey,
+      },
     });
   } catch (error) {
     console.error("Error updating site dev config:", error);

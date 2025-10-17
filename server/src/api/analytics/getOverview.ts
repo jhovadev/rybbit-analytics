@@ -1,9 +1,8 @@
+import { FilterParams } from "@rybbit/shared";
 import { FastifyReply, FastifyRequest } from "fastify";
 import { clickhouse } from "../../db/clickhouse/clickhouse.js";
-import { getFilterStatement, getTimeStatement, processResults } from "./utils.js";
 import { getUserHasAccessToSitePublic } from "../../lib/auth-utils.js";
-import { FilterParameter } from "./types.js";
-import { FilterParams } from "@rybbit/shared";
+import { getFilterStatement, getTimeStatement, processResults } from "./utils.js";
 
 type GetOverviewResponse = {
   sessions: number;
@@ -16,6 +15,7 @@ type GetOverviewResponse = {
 
 const getQuery = (params: FilterParams) => {
   const filterStatement = getFilterStatement(params.filters);
+  const timeStatement = getTimeStatement(params);
 
   return `SELECT
       session_stats.sessions,
@@ -44,7 +44,7 @@ const getQuery = (params: FilterParams) => {
                 WHERE
                     site_id = {siteId:Int32}
                     ${filterStatement}
-                    ${getTimeStatement(params)}
+                    ${timeStatement}
                 GROUP BY session_id
             )
         ) AS session_stats
@@ -52,14 +52,14 @@ const getQuery = (params: FilterParams) => {
         (
             -- Page-level and user-level metrics
             SELECT
-                COUNT(*)                   AS pageviews,
+                COUNT(CASE WHEN type = 'pageview' THEN 1 END) AS pageviews,
                 COUNT(DISTINCT user_id)    AS users
             FROM events
             WHERE 
                 site_id = {siteId:Int32}
                 ${filterStatement}
-                ${getTimeStatement(params)}
-                AND type = 'pageview'
+                ${timeStatement}
+                -- AND type = 'pageview'
         ) AS page_stats`;
 };
 

@@ -10,6 +10,14 @@ interface SiteConfigData {
   saltUserIds: boolean;
   blockBots: boolean;
   excludedIPs: string[];
+  sessionReplay: boolean;
+  webVitals: boolean;
+  trackErrors: boolean;
+  trackOutbound: boolean;
+  trackUrlParams: boolean;
+  trackInitialPageView: boolean;
+  trackSpaNavigation: boolean;
+  trackIp: boolean;
 }
 
 // Mock dependencies
@@ -51,11 +59,11 @@ describe("validateApiKey", () => {
   });
 
   it("should return success false when site is not found", async () => {
-    vi.mocked(siteConfig.getSiteConfig).mockResolvedValue(undefined);
+    vi.mocked(siteConfig.getConfig).mockResolvedValue(undefined);
 
     const result = await validateApiKey(1, "test-api-key");
 
-    expect(siteConfig.getSiteConfig).toHaveBeenCalledWith(1);
+    expect(siteConfig.getConfig).toHaveBeenCalledWith(1);
     expect(result).toEqual({ success: false, error: "Site not found" });
   });
 
@@ -69,9 +77,17 @@ describe("validateApiKey", () => {
       saltUserIds: false,
       blockBots: true,
       excludedIPs: [],
+      sessionReplay: false,
+      webVitals: false,
+      trackErrors: false,
+      trackOutbound: true,
+      trackUrlParams: true,
+      trackInitialPageView: true,
+      trackSpaNavigation: true,
+      trackIp: false,
     };
 
-    vi.mocked(siteConfig.getSiteConfig).mockResolvedValue(mockSite);
+    vi.mocked(siteConfig.getConfig).mockResolvedValue(mockSite);
 
     // Mock console.info to avoid output during tests
     const consoleSpy = vi.spyOn(console, "info").mockImplementation(() => {});
@@ -94,9 +110,17 @@ describe("validateApiKey", () => {
       saltUserIds: false,
       blockBots: true,
       excludedIPs: [],
+      sessionReplay: false,
+      webVitals: false,
+      trackErrors: false,
+      trackOutbound: true,
+      trackUrlParams: true,
+      trackInitialPageView: true,
+      trackSpaNavigation: true,
+      trackIp: false,
     };
 
-    vi.mocked(siteConfig.getSiteConfig).mockResolvedValue(mockSite);
+    vi.mocked(siteConfig.getConfig).mockResolvedValue(mockSite);
 
     const result = await validateApiKey(1, "invalid-api-key");
 
@@ -113,18 +137,42 @@ describe("validateApiKey", () => {
       saltUserIds: false,
       blockBots: true,
       excludedIPs: [],
+      sessionReplay: false,
+      webVitals: false,
+      trackErrors: false,
+      trackOutbound: true,
+      trackUrlParams: true,
+      trackInitialPageView: true,
+      trackSpaNavigation: true,
+      trackIp: false,
     };
 
-    vi.mocked(siteConfig.getSiteConfig).mockResolvedValue(mockSite);
+    vi.mocked(siteConfig.getConfig).mockResolvedValue(mockSite);
 
     await validateApiKey("123", "test-key");
 
-    expect(siteConfig.getSiteConfig).toHaveBeenCalledWith(123);
+    expect(siteConfig.getConfig).toHaveBeenCalledWith(123);
   });
 
   it("should handle site with no API key configured", async () => {
     const mockSite: Partial<SiteConfigData> &
-      Pick<SiteConfigData, "id" | "siteId" | "domain" | "public" | "saltUserIds" | "blockBots" | "excludedIPs"> = {
+      Pick<
+        SiteConfigData,
+        | "id"
+        | "siteId"
+        | "domain"
+        | "public"
+        | "saltUserIds"
+        | "blockBots"
+        | "excludedIPs"
+        | "sessionReplay"
+        | "webVitals"
+        | "trackErrors"
+        | "trackOutbound"
+        | "trackUrlParams"
+        | "trackInitialPageView"
+        | "trackSpaNavigation"
+      > = {
       id: "test-id",
       siteId: 1,
       domain: "example.com",
@@ -132,9 +180,17 @@ describe("validateApiKey", () => {
       saltUserIds: false,
       blockBots: true,
       excludedIPs: [],
+      sessionReplay: false,
+      webVitals: false,
+      trackErrors: false,
+      trackOutbound: true,
+      trackUrlParams: true,
+      trackInitialPageView: true,
+      trackSpaNavigation: true,
+      trackIp: false,
     }; // No apiKey property
 
-    vi.mocked(siteConfig.getSiteConfig).mockResolvedValue(mockSite as SiteConfigData);
+    vi.mocked(siteConfig.getConfig).mockResolvedValue(mockSite as SiteConfigData);
 
     const result = await validateApiKey(1, "any-key");
 
@@ -142,7 +198,7 @@ describe("validateApiKey", () => {
   });
 
   it("should handle errors during validation", async () => {
-    vi.mocked(siteConfig.getSiteConfig).mockRejectedValue(new Error("Database error"));
+    vi.mocked(siteConfig.getConfig).mockRejectedValue(new Error("Database error"));
 
     const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 

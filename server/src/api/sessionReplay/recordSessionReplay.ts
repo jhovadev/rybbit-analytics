@@ -37,7 +37,13 @@ export async function recordSessionReplay(
 ) {
   try {
     // Get the site configuration to get the numeric siteId
-    const siteId = (await siteConfig.getSiteConfig(request.params.site))?.siteId;
+    const { siteId, excludedIPs, sessionReplay } = (await siteConfig.getConfig(request.params.site)) ?? {};
+
+    if (!sessionReplay) {
+      logger.info(`[SessionReplay] Skipping event for site ${siteId} - session replay not enabled`);
+      return reply.status(200).send({ success: true, message: "Session replay not enabled" });
+    }
+
     if (!siteId) {
       throw new Error(`Site not found: ${request.params.site}`);
     }
@@ -80,7 +86,7 @@ export async function recordSessionReplay(
     // Check if the IP should be excluded from tracking
     const requestIP = getIpAddress(request);
 
-    if (await siteConfig.isIPExcluded(requestIP, siteId)) {
+    if (excludedIPs && excludedIPs.includes(requestIP)) {
       logger.info(`[SessionReplay] IP ${requestIP} excluded from tracking for site ${siteId}`);
       return reply.status(200).send({
         success: true,

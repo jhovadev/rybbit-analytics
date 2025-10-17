@@ -244,7 +244,7 @@ export async function trackEvent(request: FastifyRequest, reply: FastifyReply) {
     }
 
     // Get the site configuration to get the numeric siteId
-    const siteConfiguration = await siteConfig.getSiteConfig(validatedPayload.site_id);
+    const siteConfiguration = await siteConfig.getConfig(validatedPayload.site_id);
     if (!siteConfiguration) {
       logger.warn({ siteId: validatedPayload.site_id }, "Site not found");
       return reply.status(404).send({
@@ -293,7 +293,7 @@ export async function trackEvent(request: FastifyRequest, reply: FastifyReply) {
       request, // Pass request for IP/UA
       validatedPayload.type,
       validatedPayload, // Pass original validated payload
-      siteConfiguration.siteId // Pass numeric siteId separately
+      siteConfiguration
     );
 
     // Update session (use numeric siteId)

@@ -1,14 +1,14 @@
 import { FastifyReply, FastifyRequest } from "fastify";
-import { clickhouse } from "../../db/clickhouse/clickhouse.js";
-import { processResults } from "./utils.js";
 import SqlString from "sqlstring";
+import { clickhouse } from "../../db/clickhouse/clickhouse.js";
 import { getSitesUserHasAccessTo } from "../../lib/auth-utils.js";
-import { db } from "../../db/postgres/postgres.js";
-import { sites } from "../../db/postgres/schema.js";
-import { eq } from "drizzle-orm";
+import { processResults } from "./utils.js";
 
 type OrgEventCountResponse = {
   event_date: string;
+  pageview_count: number;
+  custom_event_count: number;
+  performance_count: number;
   event_count: number;
 }[];
 
@@ -82,12 +82,16 @@ export async function getOrgEventCount(
     }
 
     const query = `
-      SELECT 
-        toStartOfDay(event_hour) as event_date,
-        SUM(event_count) as event_count
-      FROM hourly_events_by_site_mv_target
+      SELECT
+        toStartOfDay(timestamp) as event_date,
+        countIf(type = 'pageview') as pageview_count,
+        countIf(type = 'custom_event') as custom_event_count,
+        countIf(type = 'performance') as performance_count,
+        count() as event_count
+      FROM events
       WHERE site_id IN (${siteIds.map((id: number) => SqlString.escape(id)).join(", ")})
-        ${timeFilter}
+        AND type IN ('pageview', 'custom_event', 'performance')
+        ${timeFilter.replace(/event_hour/g, "timestamp")}
       GROUP BY event_date
       ORDER BY event_date
       WITH FILL ${fillFromDate} ${fillToDate} STEP INTERVAL 1 DAY

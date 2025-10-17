@@ -31,7 +31,7 @@ import { useGetSessionReplayEvents } from "../../../../api/analytics/sessionRepl
 import { ScrollArea } from "../../../../components/ui/scroll-area";
 import { cn } from "../../../../lib/utils";
 import { useReplayStore } from "./replayStore";
-import { Avatar } from "../../../../components/Avatar";
+import { Avatar, generateName } from "../../../../components/Avatar";
 import Link from "next/link";
 import { Button } from "../../../../components/ui/button";
 
@@ -257,8 +257,8 @@ export function ReplayBreadcrumbs() {
     <div className="flex flex-col gap-2">
       <div className="rounded-lg border border-neutral-800 bg-neutral-900 flex items-center justify-between gap-2 p-2 text-xs text-neutral-200">
         <div className="flex items-center gap-2">
-          <Avatar name={data.metadata.user_id} size={20} />
-          {data.metadata.user_id.slice(0, 20)}
+          <Avatar id={data.metadata.user_id} size={20} />
+          {generateName(data.metadata.user_id)}
         </div>
         <Link href={`/${siteId}/user/${data.metadata.user_id}`} className="flex items-center gap-2">
           <Button size="sm">View User</Button>

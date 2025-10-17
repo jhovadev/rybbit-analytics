@@ -28,7 +28,6 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
   if (width && width < 768) {
     return (
       <div>
-        <TopBar />
         <Header />
         <div>{children}</div>
       </div>
@@ -47,9 +46,10 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
             {/* <div className="px-4 py-2 max-w-[1400px] mx-auto w-full mb-4"> */}
             <Header />
             <div>{children}</div>
-            {!pathname.includes("/map") && !pathname.includes("/realtime") && !pathname.includes("/replay") && (
-              <Footer />
-            )}
+            {!pathname.includes("/map") &&
+              !pathname.includes("/realtime") &&
+              !pathname.includes("/replay") &&
+              !pathname.includes("/globe") && <Footer />}
           </div>
         </div>
       </div>

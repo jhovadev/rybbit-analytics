@@ -1,8 +1,10 @@
 "use client";
 
-import { FileText, MousePointerClick, Edit, Trash2 } from "lucide-react";
+import { Copy, Edit, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { useDeleteGoal } from "../../../../api/analytics/goals/useDeleteGoal";
+import { Goal } from "../../../../api/analytics/goals/useGetGoals";
+import { EventIcon, PageviewIcon } from "../../../../components/EventIcons";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -14,9 +16,8 @@ import {
   AlertDialogTitle,
 } from "../../../../components/ui/alert-dialog";
 import { Button } from "../../../../components/ui/button";
-import GoalFormModal from "./GoalFormModal";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../../../../components/ui/tooltip";
-import { Goal } from "../../../../api/analytics/goals/useGetGoals";
+import GoalFormModal from "./GoalFormModal";
 
 interface GoalCardProps {
   goal: Goal;
@@ -46,7 +47,7 @@ export default function GoalCard({ goal, siteId }: GoalCardProps) {
               {goal.goalType === "path" ? (
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <FileText className="w-4 h-4 text-blue-400" />
+                    <PageviewIcon />
                   </TooltipTrigger>
                   <TooltipContent>
                     <p>Page Goal</p>
@@ -55,7 +56,7 @@ export default function GoalCard({ goal, siteId }: GoalCardProps) {
               ) : (
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <MousePointerClick className="w-4 h-4 text-amber-400" />
+                    <EventIcon />
                   </TooltipTrigger>
                   <TooltipContent>
                     <p>Event Goal</p>
@@ -102,14 +103,39 @@ export default function GoalCard({ goal, siteId }: GoalCardProps) {
               siteId={siteId}
               goal={goal}
               trigger={
-                <Button variant="ghost" size="smIcon">
-                  <Edit className="h-4 w-4" />
-                </Button>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button variant="ghost" size="smIcon">
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>Edit Goal</TooltipContent>
+                </Tooltip>
               }
             />
-            <Button onClick={() => setIsDeleteDialogOpen(true)} variant="ghost" size="smIcon">
-              <Trash2 className="h-4 w-4" />
-            </Button>
+            <GoalFormModal
+              siteId={siteId}
+              goal={goal}
+              isCloneMode={true}
+              trigger={
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button variant="ghost" size="smIcon">
+                      <Copy className="h-4 w-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>Clone Goal</TooltipContent>
+                </Tooltip>
+              }
+            />
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button onClick={() => setIsDeleteDialogOpen(true)} variant="ghost" size="smIcon">
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Delete Goal</TooltipContent>
+            </Tooltip>
           </div>
         </div>
         <div className="bg-neutral-700 h-1.5 w-full absolute bottom-0 left-0"></div>

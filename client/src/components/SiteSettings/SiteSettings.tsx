@@ -38,7 +38,7 @@ function SiteSettingsInner({ siteMetadata, trigger }: { siteMetadata: SiteRespon
   const disabled = !userOrganizationsData?.[0]?.role || userOrganizationsData?.[0]?.role === "member";
 
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState("script");
+  const [activeTab, setActiveTab] = useState("settings");
 
   if (!siteMetadata) {
     return null;
@@ -53,17 +53,17 @@ function SiteSettingsInner({ siteMetadata, trigger }: { siteMetadata: SiteRespon
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[600px]">
+      <DialogContent className="sm:max-w-[750px]">
         <DialogHeader>
           <DialogTitle>Site Settings</DialogTitle>
           <DialogDescription>Manage settings for {siteMetadata.domain}</DialogDescription>
         </DialogHeader>
         <Tabs value={activeTab} onValueChange={setActiveTab} className="pb-4">
           <TabsList className="grid w-full grid-cols-4">
+            <TabsTrigger value="settings">Site Settings</TabsTrigger>
             <TabsTrigger value="script">Tracking Script</TabsTrigger>
             <TabsTrigger value="apikey">API Key</TabsTrigger>
             <TabsTrigger value="import">Import</TabsTrigger>
-            <TabsTrigger value="settings">Site Settings</TabsTrigger>
           </TabsList>
 
           <TabsContent value="script" className="pt-4 space-y-4 max-h-[70vh] overflow-y-auto">

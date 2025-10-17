@@ -89,7 +89,7 @@ export async function getSitesFromOrg(
     const enhancedSitesData = sitesData.map(site => ({
       ...site,
       sessionsLast24Hours: sessionCountMap.get(site.siteId) || 0,
-      isOwner: isOwner,
+      isOwner: memberCheck[0]?.role !== "member",
     }));
 
     // Sort by sessions descending
@@ -104,6 +104,7 @@ export async function getSitesFromOrg(
         overMonthlyLimit: monthlyEventCount > eventLimit,
         planName: subscription?.planName || "free",
         status: subscription?.status || "free",
+        isPro: subscription?.planName.includes("pro") || false,
       },
     });
   } catch (err) {

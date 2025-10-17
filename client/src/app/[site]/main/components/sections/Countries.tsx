@@ -7,8 +7,8 @@ import { getCountryName, getLanguageName } from "../../../../../lib/utils";
 import { StandardSection } from "../../../components/shared/StandardSection/StandardSection";
 import { CountryFlag } from "../../../components/shared/icons/CountryFlag";
 import { useSubdivisions } from "../../../../../lib/geo";
-import { MapComponent } from "../../../components/shared/Map";
 import { Button } from "../../../../../components/ui/button";
+import { MapComponent } from "../../../components/shared/Map/MapComponent";
 
 type Tab = "countries" | "regions" | "languages" | "cities" | "map";
 

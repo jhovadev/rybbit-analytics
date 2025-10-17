@@ -11,6 +11,7 @@ import { userStore } from "../../../../lib/userStore";
 import { cn, formatter } from "../../../../lib/utils";
 import { AddSite } from "../../../components/AddSite";
 import { useEmbedablePage } from "../../utils";
+import { DEMO_HOSTNAME } from "../../../../lib/const";
 
 function SiteSelectorContent({ onSiteSelect }: { onSiteSelect: () => void }) {
   const { data: activeOrganization } = authClient.useActiveOrganization();
@@ -28,7 +29,7 @@ function SiteSelectorContent({ onSiteSelect }: { onSiteSelect: () => void }) {
 
   if (embed) return null;
 
-  if (typeof window !== "undefined" && globalThis.location.hostname === "demo.rybbit.io") {
+  if (typeof window !== "undefined" && globalThis.location.hostname === DEMO_HOSTNAME) {
     return (
       <PopoverContent align="start" className="w-52 p-2">
         <div className="max-h-96 overflow-y-auto">

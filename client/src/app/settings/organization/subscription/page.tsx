@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardDescription, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ProPlan } from "../../../../components/subscription/ProPlan";
+import { PaidPlan } from "../../../../components/subscription/PaidPlain/PaidPlan";
 import { useStripeSubscription } from "../../../../lib/subscription/useStripeSubscription";
 import { NoOrganization } from "../../../../components/NoOrganization";
 import { TrialPlan } from "../../../../components/subscription/TrialPlan";
@@ -11,6 +11,7 @@ import { useSetPageTitle } from "../../../../hooks/useSetPageTitle";
 import { FreePlan } from "../../../../components/subscription/FreePlan";
 import { Building } from "lucide-react";
 import { authClient } from "@/lib/auth";
+import { AppSumoPlan } from "../../../../components/subscription/AppSumoPlan";
 
 export default function OrganizationSubscriptionPage() {
   useSetPageTitle("Rybbit · Organization Subscription");
@@ -63,7 +64,11 @@ export default function OrganizationSubscriptionPage() {
       return <TrialPlan />;
     }
 
-    return <ProPlan />;
+    if (activeSubscription.appSumoPlan) {
+      return <AppSumoPlan />;
+    }
+
+    return <PaidPlan />;
   };
 
   return (

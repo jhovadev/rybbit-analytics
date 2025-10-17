@@ -36,10 +36,10 @@ source .env
 
 if [ "$USE_WEBSERVER" = "false" ]; then
   # Start without the caddy service when using --no-webserver
-  docker compose up -d backend client clickhouse postgres
+  docker compose up -d backend client clickhouse postgres --force-recreate
 else
   # Start all services including caddy
-  docker compose up -d
+  docker compose up -d --force-recreate
 fi
 
 echo "Update complete. Services are running with the latest version."
