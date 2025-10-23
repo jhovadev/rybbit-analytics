@@ -35,7 +35,7 @@ export class PgBossAdapter implements IJobQueue {
     await this.boss.createQueue(queueName);
   }
 
-  async send<T = any>(queueName: string, data: T, options?: { priority?: number; delay?: number }): Promise<string> {
+  async send<T>(queueName: string, data: T, options?: { priority?: number; delay?: number }): Promise<string> {
     const jobId = await this.boss.send(queueName, data as object, {
       priority: options?.priority,
       startAfter: options?.delay ? new Date(Date.now() + options.delay) : undefined,
@@ -48,7 +48,7 @@ export class PgBossAdapter implements IJobQueue {
     return jobId;
   }
 
-  async work<T = any>(
+  async work<T>(
     queueName: string,
     config: JobConfig,
     handler: (jobs: JobData<T>[]) => Promise<void | JobResult>
