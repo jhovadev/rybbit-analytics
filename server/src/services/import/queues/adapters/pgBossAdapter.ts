@@ -1,8 +1,8 @@
 import PgBoss, { Job } from "pg-boss";
 import { IJobQueue } from "../jobQueue.js";
-import { CSV_PARSE_QUEUE, DATA_INSERT_QUEUE } from "../../services/import/workers/jobs.js";
-import { createCsvParseWorker } from "../../services/import/workers/csvParseWorker.js";
-import { createDataInsertWorker } from "../../services/import/workers/dataInsertWorker.js";
+import { CSV_PARSE_QUEUE, DATA_INSERT_QUEUE } from "../../workers/jobs.js";
+import { createCsvParseWorker } from "../../workers/csvParseWorker.js";
+import { createDataInsertWorker } from "../../workers/dataInsertWorker.js";
 
 export class PgBossAdapter implements IJobQueue {
   private boss: PgBoss;

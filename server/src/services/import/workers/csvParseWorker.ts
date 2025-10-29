@@ -2,7 +2,7 @@ import { access, constants } from "node:fs/promises";
 import { createReadStream } from "node:fs";
 import { parse } from "@fast-csv/parse";
 import { DateTime } from "luxon";
-import { IJobQueue } from "../../../queues/jobQueue.js";
+import { IJobQueue } from "../queues/jobQueue.js";
 import { r2Storage } from "../../storage/r2StorageService.js";
 import { CSV_PARSE_QUEUE, CsvParseJob, DATA_INSERT_QUEUE, DataInsertJob } from "./jobs.js";
 import { UmamiEvent, umamiHeaders } from "../mappings/umami.js";

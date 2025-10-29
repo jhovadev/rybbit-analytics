@@ -7,7 +7,7 @@ import { FastifyRequest, FastifyReply } from "fastify";
 import { DateTime } from "luxon";
 import { z } from "zod";
 import { getUserHasAdminAccessToSite } from "../../lib/auth-utils.js";
-import { getJobQueue } from "../../queues/jobQueueFactory.js";
+import { getJobQueue } from "../../services/import/queues/jobQueueFactory.js";
 import { ImportLimiter } from "../../services/import/importLimiter.js";
 import { updateImportStatus } from "../../services/import/importStatusManager.js";
 import { deleteImportFile, getImportStorageLocation } from "../../services/import/utils.js";

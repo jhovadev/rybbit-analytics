@@ -1,4 +1,4 @@
-import { IS_CLOUD } from "../lib/const.js";
+import { IS_CLOUD } from "../../../lib/const.js";
 import { IJobQueue } from "./jobQueue.js";
 import { PgBossAdapter } from "./adapters/pgBossAdapter.js";
 import { BullMQAdapter } from "./adapters/bullMQAdapter.js";

@@ -1,4 +1,4 @@
-import { IJobQueue } from "../../../queues/jobQueue.js";
+import { IJobQueue } from "../queues/jobQueue.js";
 import { UmamiImportMapper } from "../mappings/umami.js";
 import { DataInsertJob, DATA_INSERT_QUEUE } from "./jobs.js";
 import { clickhouse } from "../../../db/clickhouse/clickhouse.js";

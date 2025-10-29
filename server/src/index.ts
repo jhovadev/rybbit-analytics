@@ -83,7 +83,7 @@ import { getSitePrivateLinkConfig } from "./api/sites/getSitePrivateLinkConfig.j
 import { getSiteImports } from "./api/sites/getSiteImports.js";
 import { importSiteData } from "./api/sites/importSiteData.js";
 import { deleteSiteImport } from "./api/sites/deleteSiteImport.js";
-import { getJobQueue } from "./queues/jobQueueFactory.js";
+import { getJobQueue } from "./services/import/queues/jobQueueFactory.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
