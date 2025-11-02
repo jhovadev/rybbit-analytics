@@ -132,12 +132,13 @@ const server = Fastify({
         return {
           method: request.method,
           url: request.url,
+          path: request.url,
+          parameters: request.params,
         };
       },
       res(reply) {
         return {
           statusCode: reply.statusCode,
-          url: reply.request?.url,
         };
       },
     },
