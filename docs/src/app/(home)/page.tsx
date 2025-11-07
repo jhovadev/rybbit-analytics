@@ -291,7 +291,7 @@ export default function HomePage() {
             </div>
           </div>
         </section>
-        <section className="py-14 md:py-20 w-full max-w-6xl px-4">
+        <section className="py-14 md:py-20 w-full max-w-6xl px-8">
           {/* <div className="bg-neutral-900/30 backdrop-blur-sm border border-neutral-800/50 rounded-2xl p-4 md:p-8"> */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-16">
             {features.map(feature => {
