@@ -25,18 +25,3 @@ export interface UmamiEvent {
   distinct_id: string;
   created_at: string;
 }
-
-// Batch import request (client sends raw rows to server)
-export interface BatchImportRequest {
-  events: UmamiEvent[]; // Raw Umami CSV rows
-  isLastBatch?: boolean; // Signal that this is the final batch
-}
-
-// Batch import response
-export interface BatchImportResponse {
-  success: boolean;
-  importedCount: number;
-  quotaExceeded?: boolean; // Indicates quota was exceeded for this batch
-  message?: string;
-  error?: string;
-}
