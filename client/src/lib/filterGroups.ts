@@ -52,8 +52,6 @@ export const USER_PAGE_FILTERS: FilterParameter[] = [
   "device_type",
   "referrer",
   "user_id",
-  "lat",
-  "lon",
 ];
 
 export const JOURNEY_PAGE_FILTERS: FilterParameter[] = [

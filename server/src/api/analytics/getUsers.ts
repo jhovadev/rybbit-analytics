@@ -33,7 +33,13 @@ export interface GetUsersRequest {
 }
 
 export async function getUsers(req: FastifyRequest<GetUsersRequest>, res: FastifyReply) {
-  const { filters, page = "1", page_size: pageSize = "20", sort_by: sortBy = "last_seen", sort_order: sortOrder = "desc" } = req.query;
+  const {
+    filters,
+    page = "1",
+    page_size: pageSize = "20",
+    sort_by: sortBy = "last_seen",
+    sort_order: sortOrder = "desc",
+  } = req.query;
   const site = req.params.site;
 
   const pageNum = parseInt(page, 10);
@@ -58,7 +64,9 @@ WITH AggregatedUsers AS (
         argMax(city, timestamp) AS city,
         argMax(language, timestamp) AS language,
         argMax(browser, timestamp) AS browser,
+        argMax(browser_version, timestamp) AS browser_version,
         argMax(operating_system, timestamp) AS operating_system,
+        argMax(operating_system_version, timestamp) AS operating_system_version,
         argMax(device_type, timestamp) AS device_type,
         argMax(screen_width, timestamp) AS screen_width, 
         argMax(screen_height, timestamp) AS screen_height,
