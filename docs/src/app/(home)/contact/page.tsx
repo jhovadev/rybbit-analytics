@@ -23,25 +23,8 @@ export default function Contact() {
             </div>
             <div>
               <h2 className="text-xl font-medium mb-1">Email</h2>
-              <a href="https://www.rybbit.com/contact" className="text-neutral-300 hover:text-white transition-colors">
+              <a href="mailto:hello@rybbit.com" className="text-neutral-300 hover:text-white transition-colors">
                 hello@rybbit.com
-              </a>
-            </div>
-          </div>
-
-          <div className="flex items-start md:items-center gap-4 flex-col md:flex-row">
-            <div className="bg-neutral-800 p-3 rounded-lg">
-              <Github className="w-6 h-6 text-neutral-300" />
-            </div>
-            <div>
-              <h2 className="text-xl font-medium mb-1">GitHub</h2>
-              <a
-                href="https://github.com/rybbit-io/rybbit"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-neutral-300 hover:text-white transition-colors"
-              >
-                github.com/rybbit-io/rybbit
               </a>
             </div>
           </div>
@@ -83,6 +66,16 @@ export default function Contact() {
       </div>
 
       <div className="bg-neutral-800/30 border border-neutral-700/50 rounded-xl p-6 mb-8">
+        <h2 className="text-xl font-medium mb-3">Customer Support</h2>
+        <p className="mb-4">
+          If you are a customer and need help with your account, please contact us at{" "}
+          <a href="mailto:support@rybbit.com" className="text-neutral-300 hover:text-white transition-colors underline">
+            support@rybbit.com
+          </a>
+          . we try to respond to all support requests within 12 hours.
+        </p>
+      </div>
+      <div className="bg-neutral-800/30 border border-neutral-700/50 rounded-xl p-6 mb-8">
         <h2 className="text-xl font-medium mb-3">White-Labeling & Custom Solutions</h2>
         <p className="mb-4">
           Looking to white-label Rybbit for your organization or need a custom analytics solution? We offer tailored
@@ -98,19 +91,6 @@ export default function Contact() {
           </a>{" "}
           to discuss your needs.
         </p>
-      </div>
-
-      <div className="bg-neutral-800/30 border border-neutral-700/50 rounded-xl p-6">
-        <h2 className="text-xl font-medium mb-3">Open Source Contributions</h2>
-        <p className="mb-4">
-          Rybbit is an open-source project. If you&apos;d like to contribute, report issues, or suggest features, please
-          visit our GitHub repository.
-        </p>
-        <Link href="https://github.com/rybbit-io/rybbit" target="_blank" rel="noopener noreferrer">
-          <button className="bg-neutral-800 hover:bg-neutral-700 text-white font-medium px-5 py-2 rounded-lg border border-neutral-700 transform hover:-translate-y-0.5 transition-all duration-200 hover:border-neutral-600 focus:outline-none focus:ring-2 focus:ring-neutral-600 focus:ring-opacity-50 cursor-pointer">
-            Visit GitHub Repository
-          </button>
-        </Link>
       </div>
     </div>
   );
