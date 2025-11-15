@@ -174,7 +174,8 @@ export default function SignupPage() {
         const normalizedDomain = normalizeDomain(domain);
         const response = await addSite(normalizedDomain, normalizedDomain, organizationId);
         // Navigate directly to dashboard after adding website
-        router.push(`/${response.siteId}`);
+        // router.push(`/${response.siteId}`);
+        router.push("/subscribe?siteId=" + response.siteId);
       } catch (error) {
         setError(String(error));
       }

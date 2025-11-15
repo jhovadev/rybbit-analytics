@@ -1,23 +1,31 @@
-import React, { useState } from "react";
+"use client";
+
 import { Slider } from "@/components/ui/slider";
-import { cn } from "@/lib/utils";
-import { toast } from "sonner";
-import { BACKEND_URL } from "@/lib/const";
 import { authClient } from "@/lib/auth";
+import { BACKEND_URL } from "@/lib/const";
+import { cn } from "@/lib/utils";
+import { useState } from "react";
+import { toast } from "sonner";
+import { DEFAULT_EVENT_LIMIT } from "../../../lib/subscription/constants";
+import { trackAdEvent } from "../../../lib/trackAdEvent";
+import { FeaturesList } from "./FeaturesList";
 import {
-  EVENT_TIERS,
-  STANDARD_FEATURES,
-  PRO_FEATURES,
   ENTERPRISE_FEATURES,
+  EVENT_TIERS,
   FREE_FEATURES,
+  PRO_FEATURES,
+  STANDARD_FEATURES,
   findPriceForTier,
   formatEventTier,
 } from "./utils";
-import { trackAdEvent } from "../../../lib/trackAdEvent";
-import { DEFAULT_EVENT_LIMIT } from "../../../lib/subscription/constants";
-import { FeaturesList } from "./FeaturesList";
+
+import { useRouter } from "next/navigation";
+import { useQueryState } from "nuqs";
 
 export function PricingCard({ isLoggedIn }: { isLoggedIn: boolean }) {
+  const [siteId] = useQueryState("siteId");
+  const router = useRouter();
+
   const [eventLimitIndex, setEventLimitIndex] = useState<number>(0);
   const [isAnnual, setIsAnnual] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -57,7 +65,7 @@ export function PricingCard({ isLoggedIn }: { isLoggedIn: boolean }) {
       // Use NEXT_PUBLIC_BACKEND_URL if available, otherwise use relative path for same-origin requests
       const baseUrl = window.location.origin;
       const successUrl = `${baseUrl}/settings/organization/subscription?session_id={CHECKOUT_SESSION_ID}`;
-      const cancelUrl = `${baseUrl}/subscribe`;
+      const cancelUrl = `${baseUrl}/subscribe${siteId ? `?siteId=${siteId}` : ""}`;
 
       const response = await fetch(`${BACKEND_URL}/stripe/create-checkout-session`, {
         method: "POST",
@@ -168,7 +176,7 @@ export function PricingCard({ isLoggedIn }: { isLoggedIn: boolean }) {
       </div>
 
       {/* Cards section */}
-      <div className="grid min-[1100px]:grid-cols-4 min-[600px]:grid-cols-2 min-[400px]:grid-cols-1 gap-6 max-w-6xl mx-auto">
+      <div className="grid min-[1100px]:grid-cols-4 min-[600px]:grid-cols-2 min-[400px]:grid-cols-1 gap-6 max-w-6xl mx-auto mb-16">
         {/* Free Plan Card */}
         <div className="bg-neutral-100/30 dark:bg-neutral-800/15 rounded-xl border border-neutral-150 dark:border-neutral-800/60 overflow-hidden text-neutral-600 dark:text-neutral-300 shadow:lg">
           <div className="p-6">
@@ -181,16 +189,17 @@ export function PricingCard({ isLoggedIn }: { isLoggedIn: boolean }) {
             <div className="mb-6">
               <div>
                 <span className="text-3xl font-bold">{DEFAULT_EVENT_LIMIT.toLocaleString()}</span>
-                <span className="ml-1 text-neutral-600 dark:text-neutral-400">/month events</span>
+                <span className="ml-1 text-neutral-600 dark:text-neutral-400">events/month</span>
               </div>
             </div>
 
             {/* Current plan button */}
             <button
-              disabled
-              className="w-full bg-neutral-300 dark:bg-neutral-700 text-neutral-500 dark:text-neutral-400 font-medium px-5 py-3 rounded-xl border border-neutral-200 dark:border-neutral-600 cursor-not-allowed opacity-50"
+              onClick={() => (siteId ? router.push(`/${siteId}`) : {})}
+              disabled={!siteId}
+              className="w-full bg-neutral-200 dark:bg-neutral-850 hover:bg-neutral-150 dark:hover:bg-neutral-800 text-neutral-600 dark:text-neutral-300 font-medium px-5 py-3 rounded-xl border border-neutral-250 dark:border-neutral-800 shadow-lg focus:outline-none focus:ring-2 focus:ring-neutral-400 focus:ring-opacity-50 cursor-pointer transition all duration-200"
             >
-              Current Plan
+              {siteId ? "Continue free" : "Current plan"}
             </button>
 
             {/* Features */}
@@ -306,11 +315,6 @@ export function PricingCard({ isLoggedIn }: { isLoggedIn: boolean }) {
           </div>
         </div>
       </div>
-
-      {/* Footer text */}
-      <p className="text-center text-sm text-neutral-600 dark:text-neutral-400 mt-6">
-        {isCustomTier ? "Email us at hello@rybbit.com for custom pricing" : "Secure checkout powered by Stripe."}
-      </p>
     </div>
   );
 }

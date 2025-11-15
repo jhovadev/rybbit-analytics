@@ -66,7 +66,6 @@ const ENTERPRISE_FEATURES = [
 const FREE_FEATURES = [
   { feature: "1 user", included: true },
   { feature: `${FREE_SITE_LIMIT} website`, included: true },
-  { feature: "Cookieless tracking", included: true },
   { feature: "Web analytics dashboard", included: true },
   { feature: "Custom events", included: true },
   { feature: "6 month data retention", included: true },
@@ -145,7 +144,9 @@ export function PricingSection() {
           <h2 className="text-4xl md:text-5xl font-bold tracking-tight pb-4 text-transparent bg-clip-text bg-gradient-to-b from-neutral-900 via-neutral-700 to-neutral-500 dark:from-white dark:via-gray-200 dark:to-gray-400">
             Simple, Transparent Pricing
           </h2>
-          <p className="text-lg text-neutral-600 dark:text-neutral-300">Privacy-friendly analytics with all the features you need to grow</p>
+          <p className="text-lg text-neutral-600 dark:text-neutral-300">
+            Privacy-friendly analytics with all the features you need to grow
+          </p>
         </div>
 
         {/* Shared controls section */}
@@ -222,7 +223,7 @@ export function PricingSection() {
             priceDisplay={
               <div>
                 <span className="text-3xl font-bold">{DEFAULT_EVENT_LIMIT.toLocaleString()}</span>
-                <span className="ml-1 text-neutral-400">/month events</span>
+                <span className="ml-1 text-neutral-400">events/month</span>
               </div>
             }
             buttonText="Start for free"

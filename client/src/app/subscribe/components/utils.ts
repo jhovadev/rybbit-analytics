@@ -56,7 +56,6 @@ export const ENTERPRISE_FEATURES = [
 export const FREE_FEATURES = [
   "1 user",
   `${FREE_SITE_LIMIT} website`,
-  "Cookieless tracking",
   "Web analytics dashboard",
   "Custom events",
   "6 month data retention",

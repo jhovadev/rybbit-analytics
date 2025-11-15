@@ -95,7 +95,7 @@ export function PricingCard({
             </Link>
           )}
 
-          <div className={cn("my-6", "space-y-3")}>
+          <div className={cn("mt-6 mb-1", "space-y-3")}>
             {displayedFeatures.map((item, i) => {
               const isObject = typeof item === "object";
               const feature = isObject ? item.feature : item;
