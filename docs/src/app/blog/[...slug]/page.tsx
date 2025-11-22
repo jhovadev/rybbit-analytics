@@ -168,7 +168,7 @@ export default async function BlogPostPage(props: { params: Promise<{ slug: stri
             components={{
               ...defaultMdxComponents,
               pre: (props: React.ComponentPropsWithoutRef<"pre">) => (
-                <Pre {...props} className="bg-neutral-900 border border-neutral-800 rounded-lg" />
+                <Pre {...props} className="bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg" />
               ),
               code: ({ className, ...props }: React.ComponentPropsWithoutRef<"code">) => {
                 // Check if this code is inside a pre tag (code block)
@@ -177,7 +177,7 @@ export default async function BlogPostPage(props: { params: Promise<{ slug: stri
                   return <code className={className} {...props} />;
                 }
                 // Inline code
-                return <code className="bg-neutral-900 px-1.5 py-0.5 rounded text-sm" {...props} />;
+                return <code className="bg-neutral-50 dark:bg-neutral-900 px-1.5 py-0.5 rounded text-sm" {...props} />;
               },
             }}
           />
