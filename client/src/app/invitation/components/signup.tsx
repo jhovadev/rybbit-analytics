@@ -71,6 +71,16 @@ export function Signup({ inviterEmail, organization }: SignupProps) {
   return (
     <form onSubmit={handleSignup}>
       <div className="flex flex-col gap-4">
+        <AuthButton
+          isLoading={isLoading}
+          loadingText="Creating account..."
+          disabled={IS_CLOUD ? !turnstileToken || isLoading : isLoading}
+        >
+          Sign Up to Accept Invitation
+        </AuthButton>
+
+        <SocialButtons onError={setError} />
+
         <AuthInput
           id="email"
           label="Email"
@@ -99,16 +109,6 @@ export function Signup({ inviterEmail, organization }: SignupProps) {
             className="flex justify-center"
           />
         )}
-
-        <AuthButton
-          isLoading={isLoading}
-          loadingText="Creating account..."
-          disabled={IS_CLOUD ? !turnstileToken || isLoading : isLoading}
-        >
-          Sign Up to Accept Invitation
-        </AuthButton>
-
-        <SocialButtons onError={setError} />
 
         <AuthError error={error} />
       </div>

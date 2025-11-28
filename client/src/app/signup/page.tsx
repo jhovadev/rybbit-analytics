@@ -195,18 +195,7 @@ export default function SignupPage() {
           <motion.div initial="hidden" animate="visible" variants={contentVariants}>
             <h2 className="text-2xl font-semibold mb-4">Signup</h2>
             <div className="space-y-4">
-              {IS_CLOUD && (
-                <SocialButtons onError={setError} callbackURL="/signup?step=2" mode="signup" showDivider={false} />
-              )}
-
-              {IS_CLOUD && (
-                <div className="relative flex items-center text-xs uppercase">
-                  <div className="flex-1 border-t border-neutral-200 dark:border-neutral-800" />
-                  <span className="px-3 text-muted-foreground">Or continue with email</span>
-                  <div className="flex-1 border-t border-neutral-200 dark:border-neutral-800" />
-                </div>
-              )}
-
+              <SocialButtons onError={setError} callbackURL="/signup?step=2" mode="signup" />
               <AuthInput
                 id="email"
                 label="Email"
@@ -216,7 +205,6 @@ export default function SignupPage() {
                 value={email}
                 onChange={e => setEmail(e.target.value)}
               />
-
               <AuthInput
                 id="password"
                 label="Password"
@@ -226,7 +214,6 @@ export default function SignupPage() {
                 value={password}
                 onChange={e => setPassword(e.target.value)}
               />
-
               {IS_CLOUD && (
                 <Turnstile
                   onSuccess={token => setTurnstileToken(token)}
@@ -235,7 +222,6 @@ export default function SignupPage() {
                   className="flex justify-center"
                 />
               )}
-
               <AuthButton
                 isLoading={isLoading}
                 loadingText="Creating account..."
@@ -247,7 +233,6 @@ export default function SignupPage() {
                 Continue
                 <ArrowRight className="ml-2 h-4 w-4" />
               </AuthButton>
-
               <div className="text-center text-sm">
                 Already have an account?{" "}
                 <Link

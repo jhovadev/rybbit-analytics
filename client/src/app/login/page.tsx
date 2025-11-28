@@ -81,19 +81,10 @@ export default function Page() {
             <RybbitTextLogo />
           </a>
         </div>
-
         <div className="flex-1 flex flex-col justify-center w-full max-w-[550px] mx-auto">
           <h1 className="text-lg text-neutral-600 dark:text-neutral-300 mb-6">Welcome back</h1>
-
           <div className="flex flex-col gap-4">
-            <SocialButtons onError={setError} showDivider={false} />
-
-            <div className="relative flex items-center text-xs uppercase">
-              <div className="flex-1 border-t border-neutral-200 dark:border-neutral-800" />
-              <span className="px-3 text-muted-foreground">Or continue with email</span>
-              <div className="flex-1 border-t border-neutral-200 dark:border-neutral-800" />
-            </div>
-
+            <SocialButtons onError={setError} />
             <form onSubmit={handleSubmit}>
               <div className="flex flex-col gap-4">
                 <AuthInput
