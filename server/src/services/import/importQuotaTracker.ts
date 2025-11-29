@@ -155,33 +155,53 @@ export class ImportQuotaTracker {
     }
   }
 
-  canImportEvent(timestamp: string): boolean {
+  /**
+   * Atomically check and reserve quota for a batch of events.
+   * This method prevents race conditions by checking all events in a batch
+   * and atomically updating usage counts for all months at once.
+   *
+   * @param timestamps - Array of event timestamps to check
+   * @returns Array of indices indicating which events can be imported
+   */
+  canImportBatch(timestamps: string[]): number[] {
     if (this.monthlyLimit === Infinity) {
-      return true;
+      return timestamps.map((_, i) => i);
     }
 
-    const dt = DateTime.fromFormat(timestamp, "yyyy-MM-dd HH:mm:ss", { zone: "utc" });
-    if (!dt.isValid) {
-      return false;
-    }
-
+    const allowedIndices: number[] = [];
+    const monthlyIncrements = new Map<string, number>();
     const now = DateTime.utc();
-    if (dt > now) {
-      return false;
+
+    for (let i = 0; i < timestamps.length; i++) {
+      const timestamp = timestamps[i];
+      const dt = DateTime.fromFormat(timestamp, "yyyy-MM-dd HH:mm:ss", { zone: "utc" });
+
+      if (!dt.isValid || dt > now) {
+        continue;
+      }
+
+      const month = dt.toFormat("yyyyMM");
+      if (month < this.oldestAllowedMonth) {
+        continue;
+      }
+
+      const currentUsage = this.monthlyUsage.get(month) || 0;
+      const incrementInBatch = monthlyIncrements.get(month) || 0;
+      const totalUsage = currentUsage + incrementInBatch;
+
+      if (totalUsage < this.monthlyLimit) {
+        allowedIndices.push(i);
+        monthlyIncrements.set(month, incrementInBatch + 1);
+      }
     }
 
-    const month = dt.toFormat("yyyyMM");
-    if (month < this.oldestAllowedMonth) {
-      return false;
+    // Atomically apply all increments at once
+    for (const [month, increment] of monthlyIncrements) {
+      const current = this.monthlyUsage.get(month) || 0;
+      this.monthlyUsage.set(month, current + increment);
     }
 
-    const used = this.monthlyUsage.get(month) || 0;
-    if (used >= this.monthlyLimit) {
-      return false;
-    }
-
-    this.monthlyUsage.set(month, used + 1);
-    return true;
+    return allowedIndices;
   }
 
   getOldestAllowedMonth(): string {

@@ -9,12 +9,13 @@ interface CachedTracker {
 class ImportQuotaManager {
   private trackers = new Map<string, CachedTracker>();
   private activeImports = new Map<string, number>(); // stores startedAt timestamp
+  private trackerCreationLocks = new Map<string, Promise<ImportQuotaTracker>>(); // prevents duplicate tracker creation
 
   private readonly CONCURRENT_IMPORT_LIMIT = 1;
   private readonly TRACKER_TTL_MS = 30 * 60 * 1000; // 30 minutes
   private readonly IMPORT_TIMEOUT_MS = 2 * 60 * 60 * 1000; // 2 hours
 
-  async getTracker(organizationId: string) {
+  async getTracker(organizationId: string): Promise<ImportQuotaTracker> {
     const now = Date.now();
     const cached = this.trackers.get(organizationId);
 
@@ -23,10 +24,25 @@ class ImportQuotaManager {
       return cached.tracker;
     }
 
-    const tracker = await ImportQuotaTracker.create(organizationId);
-    this.trackers.set(organizationId, { tracker, lastAccessed: now });
+    // Check if tracker is currently being created
+    const existingCreation = this.trackerCreationLocks.get(organizationId);
+    if (existingCreation) {
+      return await existingCreation;
+    }
 
-    return tracker;
+    // Create lock for this organization's tracker creation
+    const creationPromise = (async () => {
+      try {
+        const tracker = await ImportQuotaTracker.create(organizationId);
+        this.trackers.set(organizationId, { tracker, lastAccessed: now });
+        return tracker;
+      } finally {
+        this.trackerCreationLocks.delete(organizationId);
+      }
+    })();
+
+    this.trackerCreationLocks.set(organizationId, creationPromise);
+    return await creationPromise;
   }
 
   startImport(organizationId: string): boolean {

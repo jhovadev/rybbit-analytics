@@ -72,16 +72,11 @@ export async function batchImportEvents(request: FastifyRequest<BatchImportReque
       const transformedEvents = UmamiImportMapper.transform(events, site, importId);
       const invalidEventCount = events.length - transformedEvents.length;
 
-      const eventsWithinQuota = [];
-      let skippedDueToQuota = 0;
+      const timestamps = transformedEvents.map(e => e.timestamp);
+      const allowedIndices = quotaTracker.canImportBatch(timestamps);
 
-      for (const event of transformedEvents) {
-        if (quotaTracker.canImportEvent(event.timestamp)) {
-          eventsWithinQuota.push(event);
-        } else {
-          skippedDueToQuota++;
-        }
-      }
+      const eventsWithinQuota = allowedIndices.map(i => transformedEvents[i]);
+      const skippedDueToQuota = transformedEvents.length - eventsWithinQuota.length;
 
       if (eventsWithinQuota.length > 0) {
         await clickhouse.insert({
