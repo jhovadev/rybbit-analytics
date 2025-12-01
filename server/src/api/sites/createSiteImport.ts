@@ -50,7 +50,7 @@ export async function createSiteImport(request: FastifyRequest<CreateSiteImportR
       .where(eq(sites.siteId, siteId))
       .limit(1);
 
-    if (!siteRecord) {
+    if (!siteRecord || !siteRecord.organizationId) {
       return reply.status(404).send({ error: "Site not found" });
     }
 
