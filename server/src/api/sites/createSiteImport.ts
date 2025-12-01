@@ -11,7 +11,7 @@ import { eq } from "drizzle-orm";
 const createSiteImportRequestSchema = z
   .object({
     params: z.object({
-      site: z.coerce.number().int(),
+      site: z.coerce.number().int().positive(),
     }),
     body: z.object({
       platform: z.enum(importPlatforms),

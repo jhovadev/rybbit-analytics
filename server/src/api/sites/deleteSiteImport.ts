@@ -8,7 +8,7 @@ import { importQuotaManager } from "../../services/import/importQuotaManager.js"
 const deleteImportRequestSchema = z
   .object({
     params: z.object({
-      site: z.coerce.number().int(),
+      site: z.coerce.number().int().positive(),
       importId: z.string().uuid(),
     }),
   })

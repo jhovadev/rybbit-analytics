@@ -6,7 +6,7 @@ import { z } from "zod";
 const getSiteImportsRequestSchema = z
   .object({
     params: z.object({
-      site: z.coerce.number().int(),
+      site: z.coerce.number().int().positive(),
     }),
   })
   .strict();

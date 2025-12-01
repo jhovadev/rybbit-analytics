@@ -12,7 +12,7 @@ import { eq } from "drizzle-orm";
 const batchImportRequestSchema = z
   .object({
     params: z.object({
-      site: z.coerce.number().int(),
+      site: z.coerce.number().int().positive(),
       importId: z.string().uuid(),
     }),
     body: z.object({
