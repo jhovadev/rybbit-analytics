@@ -1,8 +1,7 @@
-import { ArrowRight, ChevronDown, ChevronUp, ExternalLink } from "lucide-react";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
+import { ArrowRight, ChevronDown, ChevronUp } from "lucide-react";
 import { DateTime } from "luxon";
-import Link from "next/link";
 import { useMemo, useState } from "react";
-import { VisuallyHidden } from "radix-ui";
 import { useCurrentSite } from "../../../../api/admin/sites";
 import { GetSessionsResponse, useGetSessionsInfinite } from "../../../../api/analytics/useGetUserSessions";
 import { Avatar, generateName } from "../../../../components/Avatar";
@@ -205,9 +204,9 @@ export function GlobeSessions() {
       </div>
 
       <Dialog open={!!selectedSession} onOpenChange={open => !open && setSelectedSession(null)}>
-        <VisuallyHidden.Root>
+        <VisuallyHidden>
           <DialogTitle>Session Details</DialogTitle>
-        </VisuallyHidden.Root>
+        </VisuallyHidden>
         <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto bg-transparent border-0 p-0 shadow-none gap-0 [&>button]:hidden">
           {selectedSession && <FullSessionCard session={selectedSession} expandedByDefault />}
         </DialogContent>

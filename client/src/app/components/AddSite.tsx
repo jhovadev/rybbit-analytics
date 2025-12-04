@@ -59,8 +59,6 @@ export function AddSite({ trigger, disabled }: { trigger?: React.ReactNode; disa
   const { data: sites, refetch } = useGetSitesFromOrg(activeOrganization?.id);
   const { data: subscription } = useStripeSubscription();
 
-  console.info(subscription);
-
   const isOverSiteLimit = getSiteLimit(subscription) <= (sites?.sites?.length || 0) && IS_CLOUD;
 
   const finalDisabled = disabled || isOverSiteLimit;

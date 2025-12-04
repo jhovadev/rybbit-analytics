@@ -24,8 +24,10 @@ import { authClient } from "../../../../lib/auth";
 import { IS_CLOUD } from "../../../../lib/const";
 import { useEmbedablePage } from "../../utils";
 import { SiteSelector } from "./SiteSelector";
+import { useStripeSubscription } from "../../../../lib/subscription/useStripeSubscription";
 
 function SidebarContent() {
+  const { data: subscription, isLoading: isSubscriptionLoading } = useStripeSubscription();
   const session = authClient.useSession();
   const pathname = usePathname();
   const embed = useEmbedablePage();
@@ -74,20 +76,6 @@ function SidebarContent() {
           href={getTabPath("main")}
           icon={<LayoutDashboard className="w-4 h-4" />}
         />
-        {/* <SidebarComponents.Item
-          label="Realtime"
-          active={isActiveTab("realtime")}
-          href={getTabPath("realtime")}
-          icon={<Earth className="w-4 h-4" />}
-        /> */}
-        {/* {!IS_CLOUD && (
-          <SidebarComponents.Item
-            label="Map"
-            active={isActiveTab("map")}
-            href={getTabPath("map")}
-            icon={<Map className="w-4 h-4" />}
-          />
-        )} */}
         <SidebarComponents.Item
           label="Globe"
           active={isActiveTab("globe")}
@@ -118,12 +106,14 @@ function SidebarContent() {
         />
         <SidebarComponents.SectionHeader>Product Analytics</SidebarComponents.SectionHeader>
         <div className="hidden md:block">
-          <SidebarComponents.Item
-            label="Replay"
-            active={isActiveTab("replay")}
-            href={getTabPath("replay")}
-            icon={<Video className="w-4 h-4" />}
-          />
+          {!subscription?.planName?.startsWith("appsumo") && !isSubscriptionLoading && (
+            <SidebarComponents.Item
+              label="Replay"
+              active={isActiveTab("replay")}
+              href={getTabPath("replay")}
+              icon={<Video className="w-4 h-4" />}
+            />
+          )}
         </div>
         <SidebarComponents.Item
           label="Funnels"
