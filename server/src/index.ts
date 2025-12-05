@@ -81,7 +81,7 @@ import { handleIdentify } from "./services/tracker/identifyService.js";
 // need to import telemetry service here to start it
 import { telemetryService } from "./services/telemetryService.js";
 import { weeklyReportService } from "./services/weekyReports/weeklyReportService.js";
-import { extractSiteId } from "./utils.js";
+import { extractSiteId, replacePathSiteId, resolveNumericSiteId } from "./utils.js";
 import { getTrackingConfig } from "./api/sites/getTrackingConfig.js";
 import { updateSitePrivateLinkConfig } from "./api/sites/updateSitePrivateLinkConfig.js";
 import { getSitePrivateLinkConfig } from "./api/sites/getSitePrivateLinkConfig.js";
@@ -281,8 +281,24 @@ server.addHook("onRequest", async (request, reply) => {
     const siteId = extractSiteId(processedUrl);
 
     if (siteId) {
+      // Convert string ID to numeric ID if needed
+      let resolvedSiteId = siteId;
+      if (!/^\d+$/.test(siteId)) {
+        const numericSiteId = await resolveNumericSiteId(siteId);
+        if (numericSiteId) {
+          // Rewrite the URL with the numeric ID
+          const newUrl = replacePathSiteId(processedUrl, numericSiteId);
+          request.raw.url = newUrl;
+          processedUrl = newUrl;
+          resolvedSiteId = String(numericSiteId);
+        } else {
+          // String ID not found in database
+          return reply.status(404).send({ error: "Site not found" });
+        }
+      }
+
       // Check all access methods: direct access, public site, or valid private key
-      const hasAccess = await getUserHasAccessToSitePublic(request, siteId);
+      const hasAccess = await getUserHasAccessToSitePublic(request, resolvedSiteId);
 
       if (hasAccess) {
         // User has access via: direct access, public site, or valid private key
