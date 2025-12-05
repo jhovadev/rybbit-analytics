@@ -366,27 +366,31 @@ server.get("/api/session-replay/list/:site", getSessionReplays);
 server.get("/api/session-replay/:sessionId/:site", getSessionReplayEvents);
 server.delete("/api/session-replay/:sessionId/:site", deleteSessionReplay);
 
-// Imports
-server.get("/api/get-site-imports/:site", getSiteImports);
-server.post("/api/create-site-import/:site", createSiteImport);
-server.post("/api/batch-import-events/:site/:importId", batchImportEvents);
-server.delete("/api/delete-site-import/:site/:importId", deleteSiteImport);
-
-// Administrative
-server.get("/api/config", getConfig);
-server.post("/api/add-site", addSite);
-server.post("/api/update-site-config", updateSiteConfig);
-server.post("/api/delete-site/:id", deleteSite);
-server.get("/api/get-sites-from-org/:organizationId", getSitesFromOrg);
-server.get("/api/get-site/:id", getSite);
-server.get("/api/site/:siteId/private-link-config", getSitePrivateLinkConfig);
-server.post("/api/site/:siteId/private-link-config", updateSitePrivateLinkConfig);
+// Sites
+server.get("/api/sites/:id", getSite);
+server.post("/api/sites", addSite);
+server.put("/api/sites/:id/config", updateSiteConfig);
+server.delete("/api/sites/:id", deleteSite);
+server.get("/api/sites/:siteId/private-link-config", getSitePrivateLinkConfig);
+server.post("/api/sites/:siteId/private-link-config", updateSitePrivateLinkConfig);
 server.get("/api/site/tracking-config/:siteId", getTrackingConfig);
-server.get("/api/site/:siteId/excluded-ips", getSiteExcludedIPs);
-server.get("/api/site/:siteId/excluded-countries", getSiteExcludedCountries);
-server.get("/api/list-organization-members/:organizationId", listOrganizationMembers);
+server.get("/api/sites/:siteId/excluded-ips", getSiteExcludedIPs);
+server.get("/api/sites/:siteId/excluded-countries", getSiteExcludedCountries);
+
+// Site Imports
+server.get("/api/sites/:site/imports", getSiteImports);
+server.post("/api/sites/:site/imports", createSiteImport);
+server.post("/api/sites/:site/imports/:importId/events", batchImportEvents);
+server.delete("/api/sites/:site/imports/:importId", deleteSiteImport);
+
+// Organizations
+server.get("/api/organizations/:organizationId/sites", getSitesFromOrg);
+server.get("/api/organizations/:organizationId/members", listOrganizationMembers);
+server.post("/api/organizations/:organizationId/members", addUserToOrganization);
+
+// User
+server.get("/api/config", getConfig);
 server.get("/api/user/organizations", getUserOrganizations);
-server.post("/api/add-user-to-organization", addUserToOrganization);
 server.post("/api/user/account-settings", updateAccountSettings);
 server.get("/api/user/api-keys", listApiKeys);
 server.post("/api/user/api-keys", createApiKey);

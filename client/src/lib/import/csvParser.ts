@@ -216,7 +216,7 @@ export class CsvParser {
       return;
     }
 
-    await authedFetch(`/batch-import-events/${this.siteId}/${this.importId}`, undefined, {
+    await authedFetch(`/sites/${this.siteId}/imports/${this.importId}/events`, undefined, {
       method: "POST",
       data: {
         events,

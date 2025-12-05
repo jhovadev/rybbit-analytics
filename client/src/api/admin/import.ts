@@ -24,7 +24,7 @@ interface CreateSiteImportResponse {
 export function useGetSiteImports(site: number) {
   return useQuery({
     queryKey: ["get-site-imports", site],
-    queryFn: async () => await authedFetch<APIResponse<GetSiteImportsResponse[]>>(`/get-site-imports/${site}`),
+    queryFn: async () => await authedFetch<APIResponse<GetSiteImportsResponse[]>>(`/sites/${site}/imports`),
     refetchInterval: data => {
       const hasActiveImports = data.state.data?.data.some(imp => imp.completedAt === null);
       return hasActiveImports ? 5000 : false;
@@ -39,7 +39,7 @@ export function useCreateSiteImport(site: number) {
 
   return useMutation({
     mutationFn: async (data: { platform: ImportPlatform }) => {
-      return await authedFetch<APIResponse<CreateSiteImportResponse>>(`/create-site-import/${site}`, undefined, {
+      return await authedFetch<APIResponse<CreateSiteImportResponse>>(`/sites/${site}/imports`, undefined, {
         method: "POST",
         data,
       });
@@ -58,7 +58,7 @@ export function useDeleteSiteImport(site: number) {
 
   return useMutation({
     mutationFn: async (importId: string) => {
-      return await authedFetch(`/delete-site-import/${site}/${importId}`, undefined, {
+      return await authedFetch(`/sites/${site}/imports/${importId}`, undefined, {
         method: "DELETE",
       });
     },
