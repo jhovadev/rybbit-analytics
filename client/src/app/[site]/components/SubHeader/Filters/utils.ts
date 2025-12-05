@@ -92,6 +92,14 @@ export const filterTypeToLabel = (type: FilterType) => {
       return "contains";
     case "not_contains":
       return "not contains";
+    case "regex":
+      return "matches";
+    case "not_regex":
+      return "not matches";
+    case "greater_than":
+      return ">";
+    case "less_than":
+      return "<";
     default:
       return type;
   }

@@ -1,7 +1,7 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import { FilterParams } from "@rybbit/shared";
 import { SessionReplayQueryService } from "../../services/replay/sessionReplayQueryService.js";
-import { enrichWithTraits } from "../analytics/utils.js";
+import { enrichWithTraits } from "../analytics/utils/utils.js";
 
 export async function getSessionReplays(
   request: FastifyRequest<{

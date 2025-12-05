@@ -240,3 +240,24 @@ export const OperatorOptions = [
   { label: "Contains", value: "contains" },
   { label: "Not contains", value: "not_contains" },
 ];
+
+export const StringOperatorOptions = [
+  { label: "Is", value: "equals" },
+  { label: "Is not", value: "not_equals" },
+  { label: "Contains", value: "contains" },
+  { label: "Not contains", value: "not_contains" },
+  { label: "Matches regex", value: "regex" },
+  { label: "Not matches regex", value: "not_regex" },
+];
+
+export const NumericOperatorOptions = [
+  { label: "Equals", value: "equals" },
+  { label: "Not equals", value: "not_equals" },
+  { label: ">", value: "greater_than" },
+  { label: "<", value: "less_than" },
+];
+
+export const NUMERIC_PARAMETERS: FilterParameter[] = ["lat", "lon"];
+
+export const isNumericParameter = (param: FilterParameter): boolean =>
+  NUMERIC_PARAMETERS.includes(param);

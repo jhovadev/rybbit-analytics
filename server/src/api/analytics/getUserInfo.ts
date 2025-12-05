@@ -3,7 +3,7 @@ import { eq, and } from "drizzle-orm";
 import { clickhouse } from "../../db/clickhouse/clickhouse.js";
 import { db } from "../../db/postgres/postgres.js";
 import { userProfiles, userAliases } from "../../db/postgres/schema.js";
-import { processResults } from "./utils.js";
+import { processResults } from "./utils/utils.js";
 
 interface UserPageviewData {
   sessions: number;
@@ -149,7 +149,7 @@ export async function getUserInfo(
     }
 
     const traits = profileResult[0]?.traits || null;
-    const linked_devices = aliasesResult.map((alias) => ({
+    const linked_devices = aliasesResult.map(alias => ({
       anonymous_id: alias.anonymous_id,
       created_at: alias.created_at,
     }));

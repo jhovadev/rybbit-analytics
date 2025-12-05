@@ -3,7 +3,7 @@ import { clickhouse } from "../../db/clickhouse/clickhouse.js";
 import { db } from "../../db/postgres/postgres.js";
 import { sites, organization } from "../../db/postgres/schema.js";
 import { eq } from "drizzle-orm";
-import { processResults } from "../../api/analytics/utils.js";
+import { processResults } from "../../api/analytics/utils/utils.js";
 import { getBestSubscription, type SubscriptionInfo } from "../../lib/subscriptionUtils.js";
 import { IS_CLOUD } from "../../lib/const.js";
 
@@ -34,11 +34,7 @@ export class ImportQuotaTracker {
   private readonly monthlyLimit: number;
   private readonly oldestAllowedMonth: string;
 
-  private constructor(
-    monthlyUsage: Map<string, number>,
-    monthlyLimit: number,
-    oldestAllowedMonth: string
-  ) {
+  private constructor(monthlyUsage: Map<string, number>, monthlyLimit: number, oldestAllowedMonth: string) {
     this.monthlyUsage = monthlyUsage;
     this.monthlyLimit = monthlyLimit;
     this.oldestAllowedMonth = oldestAllowedMonth;

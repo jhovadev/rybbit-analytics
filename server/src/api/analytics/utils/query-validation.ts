@@ -179,7 +179,16 @@ const timeBucketSchema = z.enum([
 /**
  * Schema for filter type values
  */
-const filterTypeSchema = z.enum(["equals", "not_equals", "contains", "not_contains"]);
+const filterTypeSchema = z.enum([
+  "equals",
+  "not_equals",
+  "contains",
+  "not_contains",
+  "regex",
+  "not_regex",
+  "greater_than",
+  "less_than",
+]);
 
 /**
  * Schema for filter parameter values
