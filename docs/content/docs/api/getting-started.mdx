@@ -4,9 +4,10 @@ description: Authentication, common parameters, and best practices for the Rybbi
 ---
 
 import { TypeTable } from 'fumadocs-ui/components/type-table';
+import { Tab, Tabs } from 'fumadocs-ui/components/tabs';
 
 <Callout type="warn">
-The Stats API is currently in beta. There may be breaking changes as we continue to improve and expand the API.
+The API is currently in beta. There may be breaking changes as we continue to improve and expand the API.
 </Callout>
 
 ## Authentication
@@ -354,7 +355,8 @@ The `filters` parameter accepts a JSON-encoded array of filter objects to narrow
 
 #### Filter Examples
 
-**Single filter:**
+<Tabs items={['Single Filter', 'Multiple Filters', 'Contains', 'Regex', 'Numeric', 'URL-encoded']}>
+  <Tab value="Single Filter">
 ```json
 [
   {
@@ -364,8 +366,9 @@ The `filters` parameter accepts a JSON-encoded array of filter objects to narrow
   }
 ]
 ```
-
-**Multiple filters (AND logic):**
+  </Tab>
+  <Tab value="Multiple Filters">
+Multiple filters use AND logic:
 ```json
 [
   {
@@ -380,8 +383,9 @@ The `filters` parameter accepts a JSON-encoded array of filter objects to narrow
   }
 ]
 ```
-
-**Contains filter (substring match):**
+  </Tab>
+  <Tab value="Contains">
+Substring match:
 ```json
 [
   {
@@ -391,8 +395,9 @@ The `filters` parameter accepts a JSON-encoded array of filter objects to narrow
   }
 ]
 ```
-
-**Regex filter (pattern match):**
+  </Tab>
+  <Tab value="Regex">
+Pattern match:
 ```json
 [
   {
@@ -402,8 +407,9 @@ The `filters` parameter accepts a JSON-encoded array of filter objects to narrow
   }
 ]
 ```
-
-**Numeric comparison (geolocation):**
+  </Tab>
+  <Tab value="Numeric">
+Geolocation comparison:
 ```json
 [
   {
@@ -418,11 +424,13 @@ The `filters` parameter accepts a JSON-encoded array of filter objects to narrow
   }
 ]
 ```
-
-**URL-encoded:**
+  </Tab>
+  <Tab value="URL-encoded">
 ```
 ?filters=%5B%7B%22parameter%22%3A%22country%22%2C%22type%22%3A%22equals%22%2C%22value%22%3A%5B%22US%22%5D%7D%5D
 ```
+  </Tab>
+</Tabs>
 
 ---
 
