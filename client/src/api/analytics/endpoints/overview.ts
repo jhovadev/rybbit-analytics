@@ -27,6 +27,8 @@ export type GetOverviewBucketedResponse = {
   bounce_rate: number;
   session_duration: number;
   users: number;
+  new_users: number;
+  returning_users: number;
 }[];
 
 // Metric response type
@@ -50,14 +52,8 @@ export interface LiveUserCountResponse {
  * Fetch overview metrics for a site
  * GET /api/overview/:site
  */
-export async function fetchOverview(
-  site: string | number,
-  params: CommonApiParams
-): Promise<GetOverviewResponse> {
-  const response = await authedFetch<{ data: GetOverviewResponse }>(
-    `/overview/${site}`,
-    toQueryParams(params)
-  );
+export async function fetchOverview(site: string | number, params: CommonApiParams): Promise<GetOverviewResponse> {
+  const response = await authedFetch<{ data: GetOverviewResponse }>(`/overview/${site}`, toQueryParams(params));
   return response.data;
 }
 
@@ -94,13 +90,7 @@ export async function fetchMetric(
  * Fetch live user count
  * GET /api/live-user-count/:site
  */
-export async function fetchLiveUserCount(
-  site: string | number,
-  minutes: number = 5
-): Promise<LiveUserCountResponse> {
-  const response = await authedFetch<LiveUserCountResponse>(
-    `/live-user-count/${site}`,
-    { minutes }
-  );
+export async function fetchLiveUserCount(site: string | number, minutes: number = 5): Promise<LiveUserCountResponse> {
+  const response = await authedFetch<LiveUserCountResponse>(`/live-user-count/${site}`, { minutes });
   return response;
 }
