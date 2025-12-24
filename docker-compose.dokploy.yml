@@ -9,6 +9,9 @@
 # You should also update the `BASE_URL`, and `DOMAIN_NAME` environment
 # variable when updating the domain entries with your custom domain.
 
+networks:
+  rybbit-network: null
+
 services:
   clickhouse:
     container_name: clickhouse
@@ -35,6 +38,8 @@ services:
       retries: 5
       start_period: 10s
     restart: unless-stopped
+    networks:
+        - rybbit-network
 
   postgres:
     image: postgres:17.4
@@ -52,6 +57,8 @@ services:
       retries: 5
       start_period: 10s
     restart: unless-stopped
+    networks:
+        - rybbit-network
 
   backend:
     image: ghcr.io/rybbit-io/rybbit-backend:${IMAGE_TAG:-latest}
@@ -86,6 +93,9 @@ services:
       retries: 5
       start_period: 10s
     restart: unless-stopped
+    networks:
+        - rybbit-network
+
 
   client:
     image: ghcr.io/rybbit-io/rybbit-client:${IMAGE_TAG:-latest}
@@ -103,6 +113,8 @@ services:
     depends_on:
       - backend
     restart: unless-stopped
+    networks:
+        - rybbit-network
 
 volumes:
   clickhouse-data:
